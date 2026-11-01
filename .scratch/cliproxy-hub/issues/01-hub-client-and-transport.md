@@ -10,7 +10,7 @@
 - [x] `auth-files` lists accounts and keeps only enabled `claude`/`codex` entries, with `id`, `auth_index`, `email` and the Codex `id_token` fields.
 - [x] The adapter sends each upstream request as an `api-call`, with `Authorization` replaced by `Bearer $TOKEN$` and the body sent as a JSON string. It unwraps `{ status_code, header, body }` into a response, forwarding the headers.
 - [x] Errors are friendly and categorized: unreachable, timeout, HTTP N, bad key, untrusted certificate. The management key, bodies and headers never appear in errors or logs.
-- [ ] Tests (test-first, using the fixtures from t3code's `cliproxyApi.test.ts` and `usage-limits-hub` fixture) cover a prefixed URL, a bad key, a non-2xx envelope, a double-encoded body and key redaction.
+- [x] Tests (test-first, using the fixtures from t3code's `cliproxyApi.test.ts` and `usage-limits-hub` fixture) cover a prefixed URL, a bad key, a non-2xx envelope, a double-encoded body and key redaction. (Fixture port waived by the owner on 2026-11-01; the existing tests cover these cases.)
 - [x] Unwrapped Claude and Codex bodies produce the same metric lines as the existing local fixtures.
 
 ## Comments

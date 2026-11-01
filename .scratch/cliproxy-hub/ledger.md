@@ -35,7 +35,7 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 
 | # | Issue | Blocked by | Status | Branch / PR | Merged |
 |---|---|---|---|---|---|
-| 01 | [Hub Client and Transport Adapter](issues/01-hub-client-and-transport.md) | none | in-progress | | |
+| 01 | [Hub Client and Transport Adapter](issues/01-hub-client-and-transport.md) | none | done | issue/01-hub-client-and-transport (eb275dcb) | 2026-11-01 |
 | 02 | [Claude Hub Cards From the Cached Account List](issues/02-claude-hub-cards-from-cache.md) | 01 | todo | | |
 | 03 | [Background Hub Account Sync](issues/03-background-account-sync.md) | 02 | todo | | |
 | 04 | [Codex Hub Cards](issues/04-codex-hub-cards.md) | 02 | todo | | |
@@ -47,3 +47,4 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 
 - 2026-11-01 16:30 — ledger created (7 Issues)
 - 2026-11-01 16:36 — 01 — start — launched by /relay-lite:run — ee197746
+- 2026-11-01 16:54 — 01 — deliver — squash-merged as eb275dcb; reviews CHANGES_REQUESTED → APPROVED → APPROVED; full suite 1681 tests 0 failures; one criterion unticked (fixtures not ported verbatim from t3code) — eb275dcb

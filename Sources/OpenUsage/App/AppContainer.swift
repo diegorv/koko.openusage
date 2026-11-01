@@ -71,7 +71,7 @@ final class AppContainer {
         let accountAssembly = await ProviderAccountAssembly.make(waitsForLoginShell: true)
         // CLIProxyAPI hub cards come from the account lists cached in the hub config: a local file
         // read, never a hub call, so an unreachable hub can't hold up launch.
-        let hubCards = await CLIProxyHubCards.loadClaudeRuntimes()
+        let hubCards = await CLIProxyHubCards.loadRuntimes()
         // Started after the cards are read, so this launch's cards come from the cache as it was; the
         // refreshed list shows from the next launch.
         self.hubAccountSyncTask = Task { await CLIProxyHubAccountSync.run() }
@@ -80,7 +80,8 @@ final class AppContainer {
             claudeCards: accountAssembly.claudeCards,
             codex: accountAssembly.codex,
             claudeIdentityKeys: accountAssembly.identityKeysByCard,
-            hubCards: hubCards
+            hubCards: hubCards.claude,
+            codexHubCards: hubCards.codex
         )
         let registry = WidgetRegistry.from(providers)
         let apiKeyProviders = providers.compactMap { $0 as? any APIKeyManaging }
@@ -121,7 +122,7 @@ final class AppContainer {
             enablement: enablement,
             onboarding: onboarding
         )
-        CLIProxyHubCards.enableNewCards(hubCards, enablement: enablement)
+        CLIProxyHubCards.enableNewCards(hubCards.all, enablement: enablement)
         // Providers added by an update get the same credential detection on their first launch — enabled
         // only when the user actually has the tool. Runs every launch; a no-op unless the registry has a
         // provider this install has never seen (fresh installs were just baselined by FirstRunSeeder).

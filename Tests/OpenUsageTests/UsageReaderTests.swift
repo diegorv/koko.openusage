@@ -143,17 +143,41 @@ final class UsageReaderTests: XCTestCase {
     func testHubCardLimitsAreServedUnderTheClaudeFamily() async throws {
         let usage = #"{"five_hour":{"utilization":10,"resets_at":"2099-01-01T00:00:00.000Z"},"seven_day":{"utilization":20,"resets_at":"2099-01-01T00:00:00.000Z"}}"#
         let envelope = try JSONSerialization.data(withJSONObject: ["status_code": 200, "header": [:] as [String: Any], "body": usage])
-        let hubCards = CLIProxyHubCards.claudeRuntimes(
+        let hubCards = CLIProxyHubCards.runtimes(
             hubs: [CLIProxyHubConfig.Hub(
                 id: "hub", label: "Home", url: "https://hub.example.ts.net", managementKey: "key", enabled: true,
                 accounts: [CLIProxyHubAccount(id: "claude-a.json", authIndex: "a1", provider: .claude)]
             )],
             http: RoutingHTTPClient { _ in HTTPResponse(statusCode: 200, headers: [:], body: envelope) }
-        )
+        ).claude
         let cardID = try XCTUnwrap(hubCards.first?.provider.id)
 
         let result = try await UsageReader(userDefaults: defaults(), providers: hubCards)
             .read(providerID: "claude", force: true)
+        let root = try XCTUnwrap(JSONSerialization.jsonObject(with: result.data) as? [String: Any])
+        let card = try XCTUnwrap((root["providers"] as? [String: Any])?[cardID] as? [String: Any])
+        let resources = try XCTUnwrap(card["resources"] as? [String: Any])
+
+        XCTAssertEqual(result.warnings, [])
+        XCTAssertNotNil(resources["session"])
+        XCTAssertNotNil(resources["weekly"])
+    }
+
+    /// Codex hub cards are served under the `codex` family the same way.
+    func testCodexHubCardLimitsAreServedUnderTheCodexFamily() async throws {
+        let usage = #"{"plan_type":"pro","rate_limit":{"primary_window":{"used_percent":10,"limit_window_seconds":18000,"reset_after_seconds":60},"secondary_window":{"used_percent":20,"limit_window_seconds":604800,"reset_after_seconds":600}}}"#
+        let envelope = try JSONSerialization.data(withJSONObject: ["status_code": 200, "header": [:] as [String: Any], "body": usage])
+        let hubCards = CLIProxyHubCards.runtimes(
+            hubs: [CLIProxyHubConfig.Hub(
+                id: "hub", label: "Home", url: "https://hub.example.ts.net", managementKey: "key", enabled: true,
+                accounts: [CLIProxyHubAccount(id: "codex-a.json", authIndex: "c1", provider: .codex)]
+            )],
+            http: RoutingHTTPClient { _ in HTTPResponse(statusCode: 200, headers: [:], body: envelope) }
+        ).codex
+        let cardID = try XCTUnwrap(hubCards.first?.provider.id)
+
+        let result = try await UsageReader(userDefaults: defaults(), providers: hubCards)
+            .read(providerID: "codex", force: true)
         let root = try XCTUnwrap(JSONSerialization.jsonObject(with: result.data) as? [String: Any])
         let card = try XCTUnwrap((root["providers"] as? [String: Any])?[cardID] as? [String: Any])
         let resources = try XCTUnwrap(card["resources"] as? [String: Any])

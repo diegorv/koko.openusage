@@ -71,6 +71,14 @@ final class CLIProxyHubClientTests: XCTestCase {
         ])
     }
 
+    func testCodexPlanFallsBackToTheChatGPTPlanClaim() async throws {
+        let files = #"{"files": [{"id": "codex-p.json", "auth_index": "p1", "provider": "codex", "id_token": {"chatgpt_plan_type": "team"}}]}"#
+        let (hub, _) = makeHub { _ in Self.json(files) }
+        let accounts = try await hub.listAccounts()
+
+        XCTAssertEqual(accounts.map(\.planType), ["team"])
+    }
+
     func testDiskFallbackEntriesWithoutAnIDAreCountedInTheWarning() async throws {
         // CLIProxyAPI's `listAuthFilesFromDisk` emits `name`/`type` but no `id` or `auth_index`.
         let disk = #"{"files": [{"name": "claude-d.json", "type": "claude", "email": "d@example.com", "size": 10}]}"#

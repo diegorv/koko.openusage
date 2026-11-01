@@ -39,7 +39,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
     }
 
     private func firstCard(hubs: [CLIProxyHubConfig.Hub], http: any HTTPClient) throws -> CLIProxyClaudeRuntime {
-        let runtimes = CLIProxyHubCards.claudeRuntimes(hubs: hubs, http: http)
+        let runtimes = CLIProxyHubCards.runtimes(hubs: hubs, http: http).claude
         return try XCTUnwrap(runtimes.first)
     }
 
@@ -143,7 +143,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
     func testHubWideFailureIsSharedByEveryCardOfThatHub() async throws {
         let http = RoutingHTTPClient { _ in throw URLError(.cannotConnectToHost) }
         let accounts = (1...8).map { Self.claude("claude-\($0).json") }
-        let runtimes = CLIProxyHubCards.claudeRuntimes(hubs: [Self.hub(accounts: accounts)], http: http)
+        let runtimes = CLIProxyHubCards.runtimes(hubs: [Self.hub(accounts: accounts)], http: http).claude
 
         let snapshots = await refreshAll(runtimes)
 
@@ -162,9 +162,9 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
                 ? Self.envelope(status: 401, body: "{}")
                 : Self.envelope(body: Self.usageBody)
         }
-        let runtimes = CLIProxyHubCards.claudeRuntimes(
+        let runtimes = CLIProxyHubCards.runtimes(
             hubs: [Self.hub(accounts: [Self.claude("bad.json"), Self.claude("good.json")])], http: http
-        )
+        ).claude
 
         let snapshots = await refreshAll(runtimes)
 
@@ -181,7 +181,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
             return Self.envelope(body: Self.usageBody)
         }
         let accounts = (1...10).map { Self.claude("claude-\($0).json") }
-        let runtimes = CLIProxyHubCards.claudeRuntimes(hubs: [Self.hub(accounts: accounts)], http: http)
+        let runtimes = CLIProxyHubCards.runtimes(hubs: [Self.hub(accounts: accounts)], http: http).claude
 
         let snapshots = await refreshAll(runtimes)
 
@@ -197,9 +197,9 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
     func testCardIDsAreStablePerHubAndAccountAndNamedForTheHub() {
         let http = RoutingHTTPClient { _ in Self.envelope(body: "{}") }
         let account = Self.claude("claude-a.json", email: "a@example.com")
-        let first = CLIProxyHubCards.claudeRuntimes(hubs: [Self.hub(accounts: [account])], http: http)
-        let again = CLIProxyHubCards.claudeRuntimes(hubs: [Self.hub(accounts: [account])], http: http)
-        let otherHub = CLIProxyHubCards.claudeRuntimes(hubs: [Self.hub(id: "other", accounts: [account])], http: http)
+        let first = CLIProxyHubCards.runtimes(hubs: [Self.hub(accounts: [account])], http: http).claude
+        let again = CLIProxyHubCards.runtimes(hubs: [Self.hub(accounts: [account])], http: http).claude
+        let otherHub = CLIProxyHubCards.runtimes(hubs: [Self.hub(id: "other", accounts: [account])], http: http).claude
 
         XCTAssertEqual(first.map(\.provider.id), again.map(\.provider.id))
         XCTAssertNotEqual(first.map(\.provider.id), otherHub.map(\.provider.id))
@@ -212,10 +212,10 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         var disabled = Self.hub(id: "off", accounts: [Self.claude("off.json")])
         disabled.enabled = false
         let codex = CLIProxyHubAccount(id: "codex.json", authIndex: "c", provider: .codex)
-        let runtimes = CLIProxyHubCards.claudeRuntimes(
+        let runtimes = CLIProxyHubCards.runtimes(
             hubs: [Self.hub(accounts: [Self.claude("on.json"), codex]), disabled],
             http: RoutingHTTPClient { _ in Self.envelope(body: "{}") }
-        )
+        ).claude
         XCTAssertEqual(runtimes.map(\.account.id), ["on.json"])
     }
 
@@ -229,7 +229,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
             Self.hub(id: "CLIPROXY-HUB-EXAMPLE", accounts: [Self.claude("d.json")])
         ]
 
-        let runtimes = CLIProxyHubCards.claudeRuntimes(hubs: hubs, http: RoutingHTTPClient { _ in Self.envelope(body: "{}") })
+        let runtimes = CLIProxyHubCards.runtimes(hubs: hubs, http: RoutingHTTPClient { _ in Self.envelope(body: "{}") }).claude
 
         XCTAssertEqual(runtimes.map(\.account.id), ["a.json", "b.json"])
         let providers = ProviderCatalog.make(defaults: defaults, hubCards: runtimes)
@@ -244,9 +244,9 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
     func testHubCardsDoNotDropTheLocalClaudeHistoryFromSync() {
         let defaults = makeScratchDefaults("CLIProxyHubHistory")
         let local = ClaudeProvider.makeProvider(id: "claude", displayName: "Claude")
-        let hubCards = CLIProxyHubCards.claudeRuntimes(
+        let hubCards = CLIProxyHubCards.runtimes(
             hubs: [Self.hub(accounts: [Self.claude("claude-a.json")])], http: RoutingHTTPClient { _ in Self.envelope(body: "{}") }
-        )
+        ).claude
         let cache = ProviderSnapshotCache(userDefaults: defaults, storageKey: "snapshots")
         let history = ProviderUsageHistory(series: DailyUsageSeries(daily: [
             DailyUsageEntry(date: "2026-07-13", totalTokens: 10, costUSD: 1)
@@ -272,7 +272,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         ]))
         let http = RoutingHTTPClient { _ in throw URLError(.cannotConnectToHost) }
 
-        let hubCards = await CLIProxyHubCards.loadClaudeRuntimes(store: CLIProxyHubConfigStore(files: files), http: http)
+        let hubCards = await CLIProxyHubCards.loadRuntimes(store: CLIProxyHubConfigStore(files: files), http: http).claude
         let providers = ProviderCatalog.make(defaults: defaults, hubCards: hubCards)
         let registry = WidgetRegistry.from(providers)
 
@@ -288,10 +288,10 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
 
     func testMalformedConfigLoadsNoHubCards() async {
         let files = FakeFiles([CLIProxyHubConfigStore.path: "{broken"])
-        let cards = await CLIProxyHubCards.loadClaudeRuntimes(
+        let cards = await CLIProxyHubCards.loadRuntimes(
             store: CLIProxyHubConfigStore(files: files), http: RoutingHTTPClient { _ in Self.envelope(body: "{}") }
         )
-        XCTAssertTrue(cards.isEmpty)
+        XCTAssertTrue(cards.all.isEmpty)
     }
 
     func testNewHubCardsAreEnabledOnceAndThenLeftToTheUser() throws {
@@ -299,9 +299,9 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         let enablement = ProviderEnablementStore(defaults: defaults)
         enablement.seedEnabledProviders(["claude"])
         enablement.registerKnownProviders(["claude"])
-        let runtimes = CLIProxyHubCards.claudeRuntimes(
+        let runtimes = CLIProxyHubCards.runtimes(
             hubs: [Self.hub(accounts: [Self.claude("claude-a.json")])], http: RoutingHTTPClient { _ in Self.envelope(body: "{}") }
-        )
+        ).claude
         let id = try XCTUnwrap(runtimes.first?.provider.id)
 
         CLIProxyHubCards.enableNewCards(runtimes, enablement: enablement)

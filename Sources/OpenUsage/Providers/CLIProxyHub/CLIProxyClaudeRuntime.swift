@@ -1,23 +1,10 @@
 import Foundation
 
-/// The hub rejected the account's upstream login. The hub owns the tokens, so only a re-login on the
-/// hub fixes it.
-enum CLIProxyHubAccountError: Error, LocalizedError, Equatable {
-    case reloginRequired
-
-    var errorDescription: String? {
-        switch self {
-        case .reloginRequired:
-            "Re-login this account on the hub. Its Claude sign-in there was rejected."
-        }
-    }
-}
-
 /// One Claude account held by a CLIProxyAPI hub. It shows the live limits only and reads them through
 /// the hub: no token refresh (the hub owns the tokens), no local log scans (they would count this Mac's
 /// spend), no Desktop or Keychain reads, and no reset grants. See docs/providers/cliproxy-hub.md.
 @MainActor
-final class CLIProxyClaudeRuntime: ProviderRuntime {
+final class CLIProxyClaudeRuntime: CLIProxyHubCard {
     static let usageURL = URL(string: "https://api.anthropic.com/api/oauth/usage")!
 
     let provider: Provider

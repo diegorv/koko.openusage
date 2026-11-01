@@ -1,6 +1,6 @@
 # CLIProxyAPI Hub
 
-Shows the Claude accounts held by a CLIProxyAPI hub, each on its own card, with live limits read through the hub. The hub keeps the account tokens; OpenUsage only ever sends the
+Shows the Claude and Codex accounts held by a CLIProxyAPI hub, each on its own card, with live limits read through the hub. The hub keeps the account tokens; OpenUsage only ever sends the
 hub's management key.
 
 ## Setup
@@ -38,18 +38,20 @@ Hubs live in `~/.config/openusage/cliproxy.json`:
 
 ## Cards
 
-- One card per Claude account of each enabled hub, named **Claude: <email> (Hub <label>)**. Without a
-  label, the hub's host name is used.
+- One card per Claude or Codex account of each enabled hub, named **Claude: <email> (Hub <label>)** or
+  **Codex: <email> (Hub <label>)**. Without a label, the hub's host name is used. Hub cards sit right
+  after the local cards of their family.
 - A card's id stays the same as long as the hub id and account id do.
 - A new hub card turns on the first time it appears. After that, your Customize toggle wins.
 - On a fresh install, hub cards start off, like every provider. The welcome screen never finds or
   connects them, since it only looks at sign-ins on this Mac; turn them on in Customize.
 - The new-provider check skips hub cards too.
-- Hub cards also appear in the `openusage` CLI and the local HTTP API, as part of the `claude` family.
+- Hub cards also appear in the `openusage` CLI and the local HTTP API, as part of the `claude` or
+  `codex` family.
 
 ## What it tracks
 
-Limits only, with the same defaults as the Claude card:
+Limits only. Claude hub cards have the same defaults as the Claude card:
 
 | Metric | Meaning |
 |---|---|
@@ -59,18 +61,32 @@ Limits only, with the same defaults as the Claude card:
 | Sonnet | Separate weekly Sonnet limit (off by default) |
 | Extra Usage | Extra-usage credits spent against your monthly cap |
 
+Codex hub cards have the same defaults as the Codex card:
+
+| Metric | Meaning |
+|---|---|
+| Session | 5-hour rolling window usage |
+| Weekly | 7-day window usage |
+| Spark / Spark Weekly | Separate GPT-5.3-Codex-Spark limits |
+| Extra Usage | Flex credits, as dollars and credits |
+| Rate Limit Resets | Reset credits available, as a count without expiry times. They can't be claimed from a hub card |
+
+The Codex plan comes from the usage response, or from the account's sign-in on the hub when the
+response has none.
+
 There is no usage trend or spend history: those come from local logs, and this Mac's logs don't belong
-to the hub's accounts. Rate limit resets aren't shown.
+to the hub's accounts. For the same reason a Codex hub card has no Cost Estimates section in Customize.
+Claude rate limit resets aren't shown.
 
 ## Errors
 
-- **Re-login this account on the hub** — Anthropic rejected the hub's login for that account. Sign it
+- **Re-login this account on the hub** — Anthropic or OpenAI rejected the hub's login for that account. Sign it
   in again on the hub; OpenUsage never refreshes hub tokens itself.
 - **Hub errors** (can't reach the hub, timeout, untrusted certificate, rejected management key, hub
   server error) — shown on every card of that hub at once. A refresh finds the failure once and
   shares it, instead of each card trying the hub separately.
 - A problem with one account fails only that account's card.
-- When Anthropic rate-limits an account, its card keeps the last limits with an "Updates blocked"
-  notice.
+- When Anthropic rate-limits a Claude account, its card keeps the last limits with an "Updates blocked"
+  notice. A rate-limited Codex account shows an error until the next refresh, like the local Codex card.
 
 OpenUsage sends at most 4 requests to a hub at a time.

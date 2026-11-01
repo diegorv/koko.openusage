@@ -9,7 +9,8 @@ enum ProviderCatalog {
         claudeCards: [ClaudeAccountCard] = [],
         codex: CodexAccountDiscovery = CodexAccountDiscovery(),
         claudeIdentityKeys: [String: String] = [:],
-        hubCards: [CLIProxyClaudeRuntime] = []
+        hubCards: [CLIProxyClaudeRuntime] = [],
+        codexHubCards: [CLIProxyCodexRuntime] = []
     ) -> [ProviderRuntime] {
         // Default provider order (see AGENTS.md "## Providers"): the three established providers first,
         // then every other provider alphabetically by display name.
@@ -43,7 +44,7 @@ enum ProviderCatalog {
                 )
             }
         }
-        // CLIProxyAPI hub accounts sit with the rest of the Claude family, after the local cards.
+        // CLIProxyAPI hub accounts sit with the rest of their family, after the local cards.
         providers += hubCards as [ProviderRuntime]
         if codex.cards.isEmpty {
             providers.append(CodexProvider(
@@ -68,6 +69,7 @@ enum ProviderCatalog {
                 )
             }
         }
+        providers += codexHubCards as [ProviderRuntime]
         providers += [
             CursorProvider(),
             AntigravityProvider(),

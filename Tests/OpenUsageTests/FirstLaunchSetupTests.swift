@@ -94,22 +94,25 @@ final class FirstLaunchSetupTests: XCTestCase {
     }
 
     /// Hub cards are turned on by their hub, not by the welcome screen: a down hub must not fail the
-    /// Claude row the local card connected.
+    /// Claude or Codex row the local card connected.
     func testConnectLeavesHubCardsAlone() async {
-        let hubCards = CLIProxyHubCards.claudeRuntimes(
+        let hubCards = CLIProxyHubCards.runtimes(
             hubs: [CLIProxyHubConfig.Hub(
                 id: "hub", label: nil, url: "https://hub.example.ts.net", managementKey: "key", enabled: true,
-                accounts: [CLIProxyHubAccount(id: "claude-a.json", authIndex: "a1", provider: .claude)]
+                accounts: [
+                    CLIProxyHubAccount(id: "claude-a.json", authIndex: "a1", provider: .claude),
+                    CLIProxyHubAccount(id: "codex-a.json", authIndex: "c1", provider: .codex)
+                ]
             )],
             http: RoutingHTTPClient { _ in throw URLError(.cannotConnectToHost) }
         )
-        let (setup, enablement) = makeSetup(cards: [StubRuntime("claude")] + hubCards)
+        let (setup, enablement) = makeSetup(cards: [StubRuntime("claude"), StubRuntime("codex")] + hubCards.all)
         await setup.detect()
 
         await setup.connectSelected()
 
-        XCTAssertEqual(enablement.enabledIDs, ["claude"])
-        XCTAssertEqual(setup.choices.map(\.connection), [.connected])
+        XCTAssertEqual(enablement.enabledIDs, ["claude", "codex"])
+        XCTAssertEqual(setup.choices.map(\.connection), [.connected, .connected])
     }
 
     func testDenyWhileConnectingSaysAccessWasNotGranted() async {

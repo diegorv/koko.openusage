@@ -101,7 +101,7 @@ struct CLIProxyHubClient: Sendable {
                 provider: provider,
                 email: file["email"] as? String,
                 chatgptAccountID: idToken?["chatgpt_account_id"] as? String,
-                planType: idToken?["plan_type"] as? String
+                planType: idToken?["plan_type"] as? String ?? idToken?["chatgpt_plan_type"] as? String
             ))
         }
         if unusable > 0 {

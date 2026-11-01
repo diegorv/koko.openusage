@@ -101,7 +101,7 @@ final class FirstLaunchSetup {
     private func connect(_ providerID: String) async -> Connection {
         let deniedBefore = KeychainAccessGuard.denials()
         var failure: String?
-        let localCardIDs = cards.filter { !($0 is CLIProxyClaudeRuntime) }.map(\.provider.id)
+        let localCardIDs = cards.filter { !($0 is any CLIProxyHubCard) }.map(\.provider.id)
         for cardID in localCardIDs where ProviderAccountID.family(of: cardID) == providerID {
             await KeychainAccessGuard.waitForReadsToFinish()
             enablement.setEnabled(true, for: cardID)

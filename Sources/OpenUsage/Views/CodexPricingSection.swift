@@ -13,6 +13,16 @@ struct CodexPricingSection: View {
     @State private var refreshState = CodexFallbackPricingRefreshState()
     @State private var needsRecalculation = false
 
+    /// The local Codex card ids the section prices and refreshes, or `nil` when `providerID` is not one
+    /// of them. CLIProxyAPI hub cards show limits only, so they have no spend to estimate.
+    static func cardIDs(for providerID: String, among providers: [ProviderRuntime]) -> [String]? {
+        let ids = providers
+            .filter { !($0 is any CLIProxyHubCard) }
+            .map(\.provider.id)
+            .filter { ProviderAccountID.family(of: $0) == "codex" }
+        return ids.contains(providerID) ? ids : nil
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: density.headerToCardSpacing) {
             Text("Cost Estimates")

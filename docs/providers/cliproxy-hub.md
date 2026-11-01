@@ -49,6 +49,10 @@ Hubs live in `~/.config/openusage/cliproxy.json`:
 - On a fresh install, hub cards start off, like every provider. The welcome screen never finds or
   connects them, since it only looks at sign-ins on this Mac; turn them on in Customize.
 - The new-provider check skips hub cards too.
+- If the same account is also signed in on this Mac, only the hub card shows: the local card, and its
+  spend history, is left out at launch. Claude accounts match by email; Codex accounts match by ChatGPT
+  account id, or by email when either side lacks the id. See
+  [Which Providers Are On](../provider-enablement.md#when-a-hub-holds-the-same-account).
 - Hub cards also appear in the `openusage` CLI and the local HTTP API, as part of the `claude` or
   `codex` family.
 

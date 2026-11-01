@@ -73,11 +73,17 @@ struct DefaultAccountObserver: Sendable {
     /// name the account whose credentials the provider actually refreshes with): `CLAUDE_CONFIG_DIR`
     /// when exported, else `~/.claude`. A comma-separated list can't be assigned one identity.
     func observeClaude() -> Outcome {
+        observeClaudeAccount().outcome
+    }
+
+    /// `observeClaude()` plus the account's email (lowercased), which the hub match compares and the
+    /// identity key leaves out.
+    func observeClaudeAccount() -> (outcome: Outcome, email: String?) {
         var configDir = "~/.claude"
         if let raw = environment.value(for: "CLAUDE_CONFIG_DIR")?
             .trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty {
             guard !raw.contains(",") else {
-                return .unresolved(reason: "CLAUDE_CONFIG_DIR is a comma-separated list")
+                return (.unresolved(reason: "CLAUDE_CONFIG_DIR is a comma-separated list"), nil)
             }
             configDir = raw
         }
@@ -91,21 +97,25 @@ struct DefaultAccountObserver: Sendable {
         do {
             text = try files.readTextIfPresent(identityPath)
         } catch {
-            return .unresolved(reason: "identity file unreadable: \(error.localizedDescription)")
+            return (.unresolved(reason: "identity file unreadable: \(error.localizedDescription)"), nil)
         }
         guard let text else {
             // No state file. A credential file without it can't be attributed; no footprint = absent.
-            return files.exists(anchor + "/.credentials.json")
+            let outcome: Outcome = files.exists(anchor + "/.credentials.json")
                 ? .unresolved(reason: "credentials present but no identity file")
                 : .absent
+            return (outcome, nil)
         }
         guard let parsed = try? JSONDecoder().decode(ClaudeStateFile.self, from: Data(text.utf8)),
               let account = parsed.oauthAccount,
               let key = Self.claudeIdentityKey(account)
         else {
-            return .unresolved(reason: "identity file present but names no account")
+            return (.unresolved(reason: "identity file present but names no account"), nil)
         }
-        return .resolved(identityKey: key, label: Self.claudeIdentityLabel(account), anchor: anchor)
+        return (
+            .resolved(identityKey: key, label: Self.claudeIdentityLabel(account), anchor: anchor),
+            account.emailAddress?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty?.lowercased()
+        )
     }
 
     // MARK: - Codex

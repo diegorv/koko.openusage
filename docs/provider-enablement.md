@@ -23,6 +23,15 @@ Claude and Codex accounts from a CLIProxyAPI hub skip this check: they aren't si
 
 This check happens **once per provider**. After that, the provider is yours to manage: if you turn it off, no update will ever turn it back on, and installing the tool later won't flip it on behind your back either — head to Customize when you want it.
 
+## When a hub holds the same account
+
+If an account is signed in both on this Mac and on a CLIProxyAPI hub, only the hub card shows. The local card is left out at launch, and its spend history is hidden with it.
+
+- **Claude** accounts are the same when their email matches. This hides every local card with that email, in every organization, even when the hub holds a login for only one of them.
+- **Codex** accounts are the same when their ChatGPT account id matches. When either side doesn't know the id, the email decides. The same email in a different workspace is a different account.
+- Only that local card is affected. Other local cards show as usual, and the hidden card's on/off setting is kept.
+- To bring the local card back, remove the hub from `cliproxy.json`, set its `enabled` to `false`, or remove or disable the account on the hub; it comes back on the next launch. Turning the hub card off in Customize does not bring it back: the account then shows nowhere.
+
 ## Your choices always stick
 
 Everything you set in Customize — providers on or off, metric layout, menu-bar stars — carries across updates untouched. The only thing an update may ever change is turning **on** a provider you have never seen before, and only when you actually have that tool installed.

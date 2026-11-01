@@ -24,6 +24,10 @@ struct ProviderAccountAssembly {
     var claudeCards: [ClaudeAccountCard] = []
     var codex = CodexAccountDiscovery()
     var codexCards: [CodexAccountCard] { codex.cards }
+    /// Claude account UUID → email, from the default login and Swap slots; feeds `localAccounts`.
+    var claudeEmailsByUser: [String: String] = [:]
+    /// The plain Codex card's token email, when its default home named the account.
+    var codexDefaultEmail: String? = nil
 
     /// `waitsForLoginShell`: true for the menu-bar app (a Finder/Dock launch inherits no shell
     /// exports, so the pass leans on the login-shell layers), false for the one-shot CLI (a terminal
@@ -103,7 +107,27 @@ struct ProviderAccountAssembly {
             desktop: desktop,
             listDesktopOrganizationDirectories: listDesktopOrganizationDirectories
         )
-        return assemble(readout: readout, accountsStore: accountsStore)
+        var assembly = assemble(readout: readout, accountsStore: accountsStore)
+        assembly.claudeEmailsByUser = claudeEmailsByUser(readout.claude)
+        if case .resolved(_, let email, _)? = readout.codex?.outcome { assembly.codexDefaultEmail = email }
+        return assembly
+    }
+
+    private static func claudeEmailsByUser(_ readout: ProviderAccountDiscoveryReadout.Claude?) -> [String: String] {
+        guard let readout else { return [:] }
+        var emails: [String: String] = [:]
+        for account in readout.swapAccounts {
+            emails[userUUID(account.identityKey)] = account.email.lowercased()
+        }
+        if case .resolved(let identityKey, _, _) = readout.outcome, let email = readout.defaultEmail {
+            emails[userUUID(identityKey)] = email
+        }
+        return emails
+    }
+
+    /// The account half of a Claude identity key (`uuid` or `uuid|org`).
+    static func userUUID(_ identityKey: String) -> String {
+        String(identityKey.split(separator: "|", omittingEmptySubsequences: false).first ?? "").lowercased()
     }
 
     @MainActor

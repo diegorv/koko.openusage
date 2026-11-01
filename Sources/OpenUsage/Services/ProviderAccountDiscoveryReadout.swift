@@ -6,6 +6,8 @@ struct ProviderAccountDiscoveryReadout: Sendable {
         let swapAccounts: [ClaudeSwapAccount]
         let desktopOrganizations: [ClaudeDesktopOrganization]
         let desktopAnchor: String?
+        /// The default login's email, for the hub match (see `CLIProxyHubLocalAccount`).
+        var defaultEmail: String? = nil
     }
 
     struct Codex: Sendable {
@@ -70,7 +72,7 @@ extension ProviderAccountAssembly {
         listDirectories: @Sendable (URL) -> [String]
     ) -> ProviderAccountDiscoveryReadout.Claude? {
         guard enabled else { return nil }
-        let outcome = observer.observeClaude()
+        let (outcome, defaultEmail) = observer.observeClaudeAccount()
         let swapAccounts = ClaudeSwapAccount.discover(
             files: observer.files, home: observer.homeDirectory()
         )
@@ -82,7 +84,7 @@ extension ProviderAccountAssembly {
         guard !(defaultIdentity.map { !$0.contains("|") } == true && swapAccounts.isEmpty) else {
             return ProviderAccountDiscoveryReadout.Claude(
                 outcome: outcome, swapAccounts: swapAccounts, desktopOrganizations: [],
-                desktopAnchor: nil
+                desktopAnchor: nil, defaultEmail: defaultEmail
             )
         }
 
@@ -98,7 +100,8 @@ extension ProviderAccountAssembly {
             .appendingPathComponent("Library/Application Support/Claude").path
         return ProviderAccountDiscoveryReadout.Claude(
             outcome: outcome, swapAccounts: swapAccounts,
-            desktopOrganizations: organizations, desktopAnchor: anchor
+            desktopOrganizations: organizations, desktopAnchor: anchor,
+            defaultEmail: defaultEmail
         )
     }
 

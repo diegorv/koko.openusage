@@ -10,7 +10,8 @@ enum ProviderCatalog {
         codex: CodexAccountDiscovery = CodexAccountDiscovery(),
         claudeIdentityKeys: [String: String] = [:],
         hubCards: [CLIProxyClaudeRuntime] = [],
-        codexHubCards: [CLIProxyCodexRuntime] = []
+        codexHubCards: [CLIProxyCodexRuntime] = [],
+        hiddenLocalCardIDs: Set<String> = []
     ) -> [ProviderRuntime] {
         // Default provider order (see AGENTS.md "## Providers"): the three established providers first,
         // then every other provider alphabetically by display name.
@@ -81,6 +82,7 @@ enum ProviderCatalog {
             OpenRouterProvider(),
             ZAIProvider()
         ]
-        return providers
+        // Local cards whose account a hub also holds (see `CLIProxyHubCards.hiddenLocalCardIDs`).
+        return providers.filter { !hiddenLocalCardIDs.contains($0.provider.id) }
     }
 }

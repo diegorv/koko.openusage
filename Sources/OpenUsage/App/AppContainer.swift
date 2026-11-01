@@ -87,7 +87,8 @@ final class AppContainer {
             codex: accountAssembly.codex,
             claudeIdentityKeys: accountAssembly.identityKeysByCard,
             hubCards: hubCards.claude,
-            codexHubCards: hubCards.codex
+            codexHubCards: hubCards.codex,
+            hiddenLocalCardIDs: CLIProxyHubCards.hiddenLocalCardIDs(local: accountAssembly.localAccounts, hub: hubCards)
         )
         let registry = WidgetRegistry.from(providers)
         let apiKeyProviders = providers.compactMap { $0 as? any APIKeyManaging }

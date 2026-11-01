@@ -39,7 +39,7 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 | 02 | [Claude Hub Cards From the Cached Account List](issues/02-claude-hub-cards-from-cache.md) | 01 | done | issue/02-claude-hub-cards-from-cache (9844ad69) | 2026-11-01 |
 | 03 | [Background Hub Account Sync](issues/03-background-account-sync.md) | 02 | done | issue/03-background-account-sync (66215e80) | 2026-11-01 |
 | 04 | [Codex Hub Cards](issues/04-codex-hub-cards.md) | 02 | done | issue/04-codex-hub-cards (917b9011) | 2026-11-01 |
-| 05 | [Relaunch Prompt When Hub Accounts Change](issues/05-relaunch-prompt-on-account-changes.md) | 03 | todo | | |
+| 05 | [Relaunch Prompt When Hub Accounts Change](issues/05-relaunch-prompt-on-account-changes.md) | 03 | in-progress | | |
 | 06 | [Hub Wins Over the Same Local Account](issues/06-hub-wins-over-local-account.md) | 04 | todo | | |
 | 07 | ["Add Hub" in Settings](issues/07-add-hub-settings.md) | 05 | todo | | |
 
@@ -54,3 +54,4 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 - 2026-11-01 17:30 — 03 — deliver — squash-merged as 66215e80; reviews APPROVED → APPROVED; full suite 1710+4 tests 0 failures; manual smoke test unticked — 66215e80
 - 2026-11-01 17:30 — 04 — start — launched by /relay-lite:run — c5d6c84d
 - 2026-11-01 17:49 — 04 — deliver — squash-merged as 917b9011; reviews APPROVED → APPROVED; full suite 1724 tests 0 failures; live-hub smoke test unticked — 917b9011
+- 2026-11-01 17:49 — 05 — start — launched by /relay-lite:run — 2fcd9707

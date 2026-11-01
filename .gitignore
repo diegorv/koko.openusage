@@ -3,8 +3,8 @@
 dist/
 node_modules/
 *.log
-.agents/worktrees/
-.agents/scheduled_tasks.lock
+.claude/worktrees/
+.claude/scheduled_tasks.lock
 
 # Local environment files
 .env

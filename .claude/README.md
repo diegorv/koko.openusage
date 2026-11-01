@@ -8,7 +8,7 @@ AppKit, signing, telemetry) as agent skills.
 ## Layout
 
 ```text
-.agents/
+.claude/
 ├── README.md              # this file
 └── skills/
     ├── appkit-interop/SKILL.md            (+ references/*.md)
@@ -26,15 +26,13 @@ AppKit, signing, telemetry) as agent skills.
     ├── build-and-run-macos-app/SKILL.md   # ex-slash-command
     ├── fix-codesign-error/SKILL.md        # ex-slash-command
     └── test-macos-app/SKILL.md            # ex-slash-command
-
-.claude -> .agents                          # symlink so Claude Code finds them
 ```
 
 ## Conversion notes (vs the source plugin)
 
 | Source (Codex plugin)            | This bundle                                       |
 | -------------------------------- | ------------------------------------------------- |
-| `.codex-plugin/plugin.json`      | Not needed — flat `.agents/` layout, no manifest. |
+| `.codex-plugin/plugin.json`      | Not needed — flat `.claude/` layout, no manifest. |
 | `agents/openai.yaml`             | Skipped — Codex-surface-specific agent metadata, no analog elsewhere. |
 | `skills/<name>/SKILL.md`         | Copied 1:1 (frontmatter is already compatible).   |
 | `skills/<name>/references/*`     | Copied 1:1.                                       |

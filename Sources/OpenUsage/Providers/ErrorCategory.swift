@@ -266,3 +266,14 @@ extension AntigravityError: CategorizedError {
         }
     }
 }
+
+extension CLIProxyHubError: CategorizedError {
+    var errorCategory: ErrorCategory {
+        switch self {
+        case .unreachable, .timeout, .untrustedCertificate: .network
+        case .httpStatus(let status): ErrorCategory.http(status)
+        case .badKey, .accessDenied: .authInvalid
+        case .invalidResponse: .decoding
+        }
+    }
+}

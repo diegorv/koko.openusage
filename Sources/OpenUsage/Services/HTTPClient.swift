@@ -25,8 +25,9 @@ protocol HTTPClient: Sendable {
 // NOTE: headers and successful-response bodies are NEVER logged — `Authorization`, `Cookie`, `Bearer`
 // headers and token-bearing bodies would leak. The Debug line carries the method, the redacted URL, and
 // the status code. On an HTTP error (>= 400) a redacted, truncated (<= 500 byte) preview of the body is
-// added at Debug to aid diagnosis — never the full body, and always run through `LogRedaction.bodyPreview`
-// first (which strips JWTs, api keys, and sensitive JSON values exactly like the Tauri host API did).
+// added at Debug to aid diagnosis, unless the client sets `logsErrorBodies = false` — never the full body,
+// and always run through `LogRedaction.bodyPreview` first (which strips JWTs, api keys, and sensitive JSON
+// values exactly like the Tauri host API did).
 
 struct URLSessionHTTPClient: HTTPClient {
     /// When true, requests use a loopback session that accepts a self-signed TLS cert for `127.0.0.1`
@@ -34,6 +35,9 @@ struct URLSessionHTTPClient: HTTPClient {
     /// on a random localhost port; nothing else needs this. Off by default so remote calls keep full
     /// certificate validation.
     var allowsInsecureLoopback: Bool = false
+    /// When false, an HTTP error logs only the method, URL and status, never the body preview. For
+    /// callers whose error bodies can echo a secret no redaction pattern knows (a hub management key).
+    var logsErrorBodies: Bool = true
 
     /// One session for every provider request, built once with the optional `~/.openusage/config.json`
     /// proxy applied (see `ProxyConfig`). Default configuration — same cookie/cache semantics as
@@ -75,7 +79,7 @@ struct URLSessionHTTPClient: HTTPClient {
         }
 
         let line = "\(request.method) \(LogRedaction.redactURL(request.url.absoluteString)) -> \(http.statusCode)"
-        if http.statusCode >= 400 {
+        if http.statusCode >= 400, logsErrorBodies {
             AppLog.debug(.http, "\(line) body: \(LogRedaction.bodyPreview(String(decoding: data, as: UTF8.self)))")
         } else {
             AppLog.debug(.http, line)

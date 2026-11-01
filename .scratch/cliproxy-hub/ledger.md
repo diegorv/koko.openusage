@@ -42,7 +42,7 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 | 05 | [Relaunch Prompt When Hub Accounts Change](issues/05-relaunch-prompt-on-account-changes.md) | 03 | done | issue/05-relaunch-prompt-on-account-changes (1906e77b) | 2026-11-01 |
 | 06 | [Hub Wins Over the Same Local Account](issues/06-hub-wins-over-local-account.md) | 04 | done | issue/06-hub-wins-over-local-account (a05266f2) | 2026-11-01 |
 | 07 | ["Add Hub" in Settings](issues/07-add-hub-settings.md) | 05 | done | issue/07-add-hub-settings (de2f497b) | 2026-11-01 |
-| 08 | [Codex Hub Match Counts Team Seats Separately](issues/08-codex-team-seat-match.md) | 06 | in-progress | | |
+| 08 | [Codex Hub Match Counts Team Seats Separately](issues/08-codex-team-seat-match.md) | 06 | done | issue/08-codex-team-seat-match (af9268fc) | 2026-11-01 |
 
 ## Log
 
@@ -63,3 +63,4 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 - 2026-11-01 18:36 — 07 — deliver — squash-merged; reviews CHANGES_REQUESTED → APPROVED; full suite 1757 tests 0 failures; UI not checked by hand — de2f497b
 - 2026-11-01 18:38 — ledger updated (added 08)
 - 2026-11-01 18:41 — 08 — start — launched by /relay-lite:run — 161e75de
+- 2026-11-01 18:49 — 08 — deliver — squash-merged as af9268fc; reviews APPROVED → APPROVED; full suite 1758+4 tests 0 failures; Codex match now requires emails to agree when both present — af9268fc

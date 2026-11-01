@@ -25,6 +25,7 @@ What each provider tracks, where its credentials come from, and what to do when 
 
 - [Antigravity](providers/antigravity.md)
 - [Claude](providers/claude.md)
+- [CLIProxyAPI Hub](providers/cliproxy-hub.md)
 - [Codex](providers/codex.md)
 - [Copilot](providers/copilot.md)
 - [Cursor](providers/cursor.md)

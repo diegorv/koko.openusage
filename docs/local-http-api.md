@@ -22,6 +22,10 @@ Matching is plain string comparison: an exact provider ID names that provider, a
 card. There is no aliasing or "pick the right account" logic; the same request always names the same
 providers.
 
+Claude accounts read through a CLIProxyAPI hub (see [CLIProxyAPI Hub](providers/cliproxy-hub.md)) are
+ordinary `claude` family cards here: each has its own `claude@…` ID, and `claude` names them along with
+the local Claude cards.
+
 - **200 OK** — limits envelope with every matched provider that has data (an `errors` entry appears
   when a refresh failed; a matched provider with no data yet simply has no entry).
 - **404 Not Found** — the ID names no known provider and no family.

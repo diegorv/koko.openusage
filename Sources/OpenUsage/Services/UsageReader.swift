@@ -55,11 +55,13 @@ public struct UsageReader {
         let accountAssembly = providersOverride == nil
             ? await ProviderAccountAssembly.make(defaults: defaults, waitsForLoginShell: false)
             : ProviderAccountAssembly(identityKeysByCard: [:])
+        let hubCards = providersOverride == nil ? await CLIProxyHubCards.loadClaudeRuntimes() : []
         let providers = providersOverride ?? ProviderCatalog.make(
             defaults: defaults,
             claudeCards: accountAssembly.claudeCards,
             codex: accountAssembly.codex,
-            claudeIdentityKeys: accountAssembly.identityKeysByCard
+            claudeIdentityKeys: accountAssembly.identityKeysByCard,
+            hubCards: hubCards
         )
         let registry = WidgetRegistry.from(providers)
         let knownIDs = Set(registry.providers.map(\.id))

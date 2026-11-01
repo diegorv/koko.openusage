@@ -446,8 +446,9 @@ final class WidgetDataStore {
     func localHistoryDocument(deviceID: String, deviceName: String, updatedAt: Date = Date()) -> UsageHistoryDocument {
         var providers: [String: ProviderUsageHistory] = [:]
         var identities: [String: String] = [:]
-        let hasMultipleClaudeCards = registry.providers.count {
-            ProviderAccountID.family(of: $0.id) == "claude"
+        // Only cards that keep history count: CLIProxyAPI hub cards have none.
+        let hasMultipleClaudeCards = registry.historyDescriptorsByProvider.keys.count {
+            ProviderAccountID.family(of: $0) == "claude"
         } > 1
         for (providerID, descriptor) in registry.historyDescriptorsByProvider
         where descriptor.scope == .machineLocal && isProviderEnabled(providerID) {

@@ -93,6 +93,25 @@ final class FirstLaunchSetupTests: XCTestCase {
         XCTAssertTrue(setup.hasFailures)
     }
 
+    /// Hub cards are turned on by their hub, not by the welcome screen: a down hub must not fail the
+    /// Claude row the local card connected.
+    func testConnectLeavesHubCardsAlone() async {
+        let hubCards = CLIProxyHubCards.claudeRuntimes(
+            hubs: [CLIProxyHubConfig.Hub(
+                id: "hub", label: nil, url: "https://hub.example.ts.net", managementKey: "key", enabled: true,
+                accounts: [CLIProxyHubAccount(id: "claude-a.json", authIndex: "a1", provider: .claude)]
+            )],
+            http: RoutingHTTPClient { _ in throw URLError(.cannotConnectToHost) }
+        )
+        let (setup, enablement) = makeSetup(cards: [StubRuntime("claude")] + hubCards)
+        await setup.detect()
+
+        await setup.connectSelected()
+
+        XCTAssertEqual(enablement.enabledIDs, ["claude"])
+        XCTAssertEqual(setup.choices.map(\.connection), [.connected])
+    }
+
     func testDenyWhileConnectingSaysAccessWasNotGranted() async {
         let keychain = SecurityKeychainAccessor(itemAccessor: DenyingItemAccessor())
         let (setup, enablement) = makeSetup(cards: [
@@ -133,7 +152,7 @@ final class FirstLaunchSetupTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func makeSetup(cards: [StubRuntime]) -> (FirstLaunchSetup, ProviderEnablementStore) {
+    private func makeSetup(cards: [any ProviderRuntime]) -> (FirstLaunchSetup, ProviderEnablementStore) {
         let enablement = ProviderEnablementStore(defaults: makeScratchDefaults("FirstLaunchSetup"))
         enablement.seedEnabledProviders([])
         let defaults = makeScratchDefaults("FirstLaunchSetup.Cache")

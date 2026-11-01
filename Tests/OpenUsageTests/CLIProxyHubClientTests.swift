@@ -153,7 +153,7 @@ final class CLIProxyHubClientTests: XCTestCase {
 
     func testAdapterSendsTheUpstreamRequestAsAnAPICall() async throws {
         let (hub, http) = makeHub("https://hub.example.ts.net/proxy") { _ in try Self.envelope(body: "{}") }
-        let adapter = CLIProxyHubHTTPClient(hub: hub, authIndex: "a1b2c3")
+        let adapter = CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "a1b2c3")
 
         _ = try await adapter.send(HTTPRequest(
             method: "POST",
@@ -182,7 +182,7 @@ final class CLIProxyHubClientTests: XCTestCase {
 
     func testAdapterOmitsDataWhenTheRequestHasNoBody() async throws {
         let (hub, http) = makeHub { _ in try Self.envelope(body: "{}") }
-        _ = try await CLIProxyHubHTTPClient(hub: hub, authIndex: "a1")
+        _ = try await CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "a1")
             .send(HTTPRequest(method: "GET", url: URL(string: "https://chatgpt.com/backend-api/wham/usage")!))
 
         let payload = try XCTUnwrap(try JSONSerialization.jsonObject(with: XCTUnwrap(http.requests.first?.body)) as? [String: Any])
@@ -197,7 +197,7 @@ final class CLIProxyHubClientTests: XCTestCase {
                 body: #"{"ok":true}"#
             )
         }
-        let response = try await CLIProxyHubHTTPClient(hub: hub, authIndex: "a1")
+        let response = try await CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "a1")
             .send(HTTPRequest(method: "GET", url: URL(string: "https://x.test")!))
 
         XCTAssertEqual(response.statusCode, 200)
@@ -210,7 +210,7 @@ final class CLIProxyHubClientTests: XCTestCase {
         let (hub, _) = makeHub { _ in
             try Self.envelope(status: 429, header: ["Retry-After": ["30"]], body: #"{"error":"rate_limited"}"#)
         }
-        let response = try await CLIProxyHubHTTPClient(hub: hub, authIndex: "a1")
+        let response = try await CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "a1")
             .send(HTTPRequest(method: "GET", url: URL(string: "https://x.test")!))
 
         XCTAssertEqual(response.statusCode, 429)
@@ -225,7 +225,7 @@ final class CLIProxyHubClientTests: XCTestCase {
         ]
         for raw in bodies {
             let (hub, _) = makeHub { _ in Self.json(raw) }
-            let response = try await CLIProxyHubHTTPClient(hub: hub, authIndex: "a1")
+            let response = try await CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "a1")
                 .send(HTTPRequest(method: "GET", url: URL(string: "https://x.test")!))
             let object = try XCTUnwrap(ProviderParse.jsonObject(response.body), raw)
             XCTAssertEqual(object["ok"] as? Bool, true, raw)
@@ -240,7 +240,7 @@ final class CLIProxyHubClientTests: XCTestCase {
             for status in [401, 500] {
                 let (hub, _) = makeHub { _ in Self.json(echo, status: status) }
                 do {
-                    _ = try await CLIProxyHubHTTPClient(hub: hub, authIndex: "a1").send(HTTPRequest(
+                    _ = try await CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "a1").send(HTTPRequest(
                         method: "GET", url: URL(string: "https://x.test")!,
                         headers: ["Authorization": "Bearer header-marker"], body: Data("request-marker".utf8)
                     ))
@@ -288,7 +288,7 @@ final class CLIProxyHubClientTests: XCTestCase {
             refreshURL: URL(string: "https://platform.claude.com/v1/oauth/token")!,
             clientID: "client"
         )
-        let response = try await ClaudeUsageClient(httpClient: CLIProxyHubHTTPClient(hub: hub, authIndex: "a1"))
+        let response = try await ClaudeUsageClient(httpClient: CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "a1"))
             .fetchUsage(accessToken: "unused", config: config)
         let viaHub = try ClaudeUsageMapper.mapUsageResponse(response, credentials: credentials)
 
@@ -311,7 +311,7 @@ final class CLIProxyHubClientTests: XCTestCase {
         let local = try CodexUsageMapper.mapUsageResponse(Self.json(body), now: now)
 
         let (hub, _) = makeHub { _ in try Self.envelope(body: body) }
-        let response = try await CodexUsageClient(http: CLIProxyHubHTTPClient(hub: hub, authIndex: "d4e5f6"))
+        let response = try await CodexUsageClient(http: CLIProxyHubHTTPClient(session: CLIProxyHubSession(hubID: "hub", client: hub), authIndex: "d4e5f6"))
             .fetchUsage(accessToken: "unused", accountID: "account-b")
         let viaHub = try CodexUsageMapper.mapUsageResponse(response, now: now)
 

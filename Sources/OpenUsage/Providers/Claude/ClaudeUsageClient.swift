@@ -116,7 +116,7 @@ struct ClaudeUsageClient: Sendable {
         return components.url ?? usageURL
     }
 
-    private func sendUsageRequest(url: URL, accessToken: String) async throws -> HTTPResponse {
+    func sendUsageRequest(url: URL, accessToken: String) async throws -> HTTPResponse {
         try await httpClient.send(
             HTTPRequest(method: "GET", url: url, headers: Self.claudeCodeHeaders(accessToken), timeout: 10)
         )

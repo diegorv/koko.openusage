@@ -19,6 +19,8 @@ The same detection runs for providers that arrive later. On the first launch aft
 
 A new account of a provider you already have (say, a second Codex login) follows that provider instead: it turns on with credentials if the provider is on, and stays off if you turned the provider off or skipped it on the welcome screen.
 
+Claude accounts from a CLIProxyAPI hub skip this check: they aren't sign-ins on your Mac. A new hub card turns on the first time it appears (except on a fresh install, where it starts off and the welcome screen leaves it alone), and is yours to manage after that (see [CLIProxyAPI Hub](providers/cliproxy-hub.md)).
+
 This check happens **once per provider**. After that, the provider is yours to manage: if you turn it off, no update will ever turn it back on, and installing the tool later won't flip it on behind your back either — head to Customize when you want it.
 
 ## Your choices always stick

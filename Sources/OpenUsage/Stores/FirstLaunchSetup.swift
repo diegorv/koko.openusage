@@ -96,11 +96,13 @@ final class FirstLaunchSetup {
     }
 
     /// Turns on each of the provider's cards and refreshes it once no earlier popup is still open. A
-    /// card that fails goes back off, and the first failure is what the row shows.
+    /// card that fails goes back off, and the first failure is what the row shows. CLIProxyAPI hub cards
+    /// are skipped: their hub turns them on, and a down hub must not fail a row whose local card connected.
     private func connect(_ providerID: String) async -> Connection {
         let deniedBefore = KeychainAccessGuard.denials()
         var failure: String?
-        for cardID in cards.map(\.provider.id) where ProviderAccountID.family(of: cardID) == providerID {
+        let localCardIDs = cards.filter { !($0 is CLIProxyClaudeRuntime) }.map(\.provider.id)
+        for cardID in localCardIDs where ProviderAccountID.family(of: cardID) == providerID {
             await KeychainAccessGuard.waitForReadsToFinish()
             enablement.setEnabled(true, for: cardID)
             await dataStore.refresh(providerID: cardID, force: true)

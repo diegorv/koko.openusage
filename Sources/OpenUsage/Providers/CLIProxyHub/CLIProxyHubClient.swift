@@ -2,8 +2,8 @@ import Foundation
 
 /// One enabled Claude or Codex account held by a CLIProxyAPI hub, from `GET auth-files`. The Codex
 /// fields are the hub's decoded `id_token` claims.
-struct CLIProxyHubAccount: Equatable, Sendable {
-    enum Provider: String, Sendable {
+struct CLIProxyHubAccount: Codable, Equatable, Sendable {
+    enum Provider: String, Codable, Sendable {
         case claude
         case codex
     }

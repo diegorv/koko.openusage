@@ -76,7 +76,8 @@ final class ClaudeProvider: ProviderRuntime {
         self.pricing = pricing
     }
 
-    var widgetDescriptors: [WidgetDescriptor] {
+    /// The limits read from `/api/oauth/usage`, shared with the CLIProxyAPI hub cards.
+    static func limitDescriptors(provider: Provider) -> [WidgetDescriptor] {
         [
             .percent(id: "\(provider.id).session", provider: provider, title: "Session", sessionStartSignal: .missingResetDate)
                 .exportingLimit("session", unit: "percent"),
@@ -87,7 +88,12 @@ final class ClaudeProvider: ProviderRuntime {
             .percent(id: "\(provider.id).sonnet", provider: provider, title: "Sonnet")
                 .exportingLimit("sonnet", unit: "percent"),
             .boundedDollars(id: "\(provider.id).extra", provider: provider, title: "Extra Usage", metricLabel: "Extra usage spent", limit: 100, valueWord: "spent")
-                .exportingLimit("extraUsage", unit: "usd", source: .progressOrValue(kind: .dollars)),
+                .exportingLimit("extraUsage", unit: "usd", source: .progressOrValue(kind: .dollars))
+        ]
+    }
+
+    var widgetDescriptors: [WidgetDescriptor] {
+        Self.limitDescriptors(provider: provider) + [
             // Anthropic's one-off usage-limit reset grants (`cedar_ember`), shown read-only in the same
             // resets popover as Codex. Seeded On Demand and unpinned in `DefaultLayout`, like Codex's.
             .values(id: "\(provider.id).rateLimitResets", provider: provider, title: "Rate Limit Resets", metricLabel: "Rate Limit Resets", traySuffix: "resets", showsResetExpiries: true)

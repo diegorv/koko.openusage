@@ -277,3 +277,11 @@ extension CLIProxyHubError: CategorizedError {
         }
     }
 }
+
+extension CLIProxyHubAccountError: CategorizedError {
+    var errorCategory: ErrorCategory {
+        switch self {
+        case .reloginRequired: .authExpired
+        }
+    }
+}

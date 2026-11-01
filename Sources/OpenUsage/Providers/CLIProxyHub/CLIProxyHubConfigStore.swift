@@ -59,16 +59,27 @@ struct CLIProxyHubConfigStore: Sendable {
         try files.writeText(Self.path, String(decoding: try encoder.encode(config), as: UTF8.self))
     }
 
+    /// Settings writes the file on the main actor and the account sync writes it off it. A
+    /// load/modify/save run inside `exclusively` can't interleave with another one, so neither
+    /// overwrites the other's change. Not reentrant.
+    private static let lock = NSLock()
+
+    func exclusively<Result>(_ body: () throws -> Result) rethrows -> Result {
+        try Self.lock.withLock(body)
+    }
+
     /// Replaces one hub's cached account list and leaves every other hub as it is. A repeated hub id
     /// resolves to its first enabled entry (case-insensitive), the same one the cards and the sync use.
     func saveAccounts(_ accounts: [CLIProxyHubAccount], hubID: String) throws {
-        var config = try load()
-        let id = hubID.lowercased()
-        guard let index = config.hubs.firstIndex(where: { $0.enabled && $0.id.lowercased() == id }) else {
-            AppLog.warn(.config, "cliproxy hub \(hubID) is no longer configured or enabled; its account list was not saved")
-            return
+        try exclusively {
+            var config = try load()
+            let id = hubID.lowercased()
+            guard let index = config.hubs.firstIndex(where: { $0.enabled && $0.id.lowercased() == id }) else {
+                AppLog.warn(.config, "cliproxy hub \(hubID) is no longer configured or enabled; its account list was not saved")
+                return
+            }
+            config.hubs[index].accounts = accounts
+            try save(config)
         }
-        config.hubs[index].accounts = accounts
-        try save(config)
     }
 }

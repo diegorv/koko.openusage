@@ -5,7 +5,8 @@ hub's management key.
 
 ## Setup
 
-Hubs live in `~/.config/openusage/cliproxy.json`:
+Add a hub in Settings → CLIProxyAPI Hubs → Add Hub (see [Settings](../settings.md#cliproxyapi-hubs)). Hubs are
+saved in `~/.config/openusage/cliproxy.json`, which can also be edited by hand:
 
 ```json
 {

@@ -66,4 +66,27 @@ final class CLIProxyHubConfigStoreTests: XCTestCase {
         let files = FakeFiles([path: "{not json"])
         XCTAssertThrowsError(try CLIProxyHubConfigStore(files: files).load())
     }
+
+    /// Settings saves on the main actor while the account sync saves off it: a Settings change made
+    /// during an account save must not be overwritten by it.
+    func testSavingAccountsWaitsForAnExclusiveChange() async throws {
+        let files = FakeFiles()
+        let store = CLIProxyHubConfigStore(files: files)
+        let one = CLIProxyHubConfig.Hub(id: "one", label: nil, url: "https://one.example", managementKey: "k", enabled: true, accounts: [])
+        let two = CLIProxyHubConfig.Hub(id: "two", label: nil, url: "https://two.example", managementKey: "k", enabled: true, accounts: [])
+        try store.save(CLIProxyHubConfig(hubs: [one]))
+        let accounts = [account("a.json")]
+
+        let accountSave = try store.exclusively {
+            let task = Task.detached { try store.saveAccounts(accounts, hubID: "one") }
+            Thread.sleep(forTimeInterval: 0.2)
+            try store.save(CLIProxyHubConfig(hubs: [one, two]))
+            return task
+        }
+        try await accountSave.value
+
+        let hubs = try store.load().hubs
+        XCTAssertEqual(hubs.map(\.id), ["one", "two"])
+        XCTAssertEqual(hubs.first?.accounts, accounts)
+    }
 }

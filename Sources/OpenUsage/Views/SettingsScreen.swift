@@ -55,6 +55,7 @@ struct SettingsScreen: View {
         VStack(alignment: .leading, spacing: density.sectionSpacing) {
             generalSection
             ICloudSyncSettingsSection(sync: container.iCloudSync)
+            CLIProxyHubSettingsSection(notice: container.hubRelaunchNotice)
             appearanceSection
             usageDisplaySection
             notificationsSection

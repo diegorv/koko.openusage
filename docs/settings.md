@@ -20,6 +20,23 @@ same iCloud account. Settings shows the five-minute write cadence and each Mac's
 time; it also reports unavailable iCloud, loading, write, and malformed-file states. See
 [iCloud Sync](icloud-sync.md) for what is included and which surfaces use the combined values.
 
+## CLIProxyAPI Hubs
+
+Lists the [CLIProxyAPI hubs](providers/cliproxy-hub.md) OpenUsage reads Claude and Codex accounts from.
+
+- **Add Hub** opens a form with **Hub URL**, **Management Key** (hidden as you type) and an optional
+  **Label**. Without a label, the hub's host name is used. **Save** turns on once the URL and the key
+  are filled in.
+- Each new hub gets an id like `cliproxy-hub-example-ts-net`, from its host name; a second hub on the same
+  host gets `-2`, then `-3`. Adding a URL that's already saved updates that hub's key and label and keeps
+  its id, so its cards and their settings stay.
+- Each hub row has an on/off switch and a remove button (removing asks first and deletes the saved key).
+- Saving writes `~/.config/openusage/cliproxy.json` and fetches the hub's account list in the background.
+  Hub cards are built at launch, so a **Relaunch** button appears to apply the change (the dashboard shows
+  the same prompt).
+- If `cliproxy.json` can't be read or isn't valid JSON, the section shows an error instead of the hubs
+  (the error is also logged), and nothing is saved until the file is fixed or removed.
+
 ## Appearance
 
 | Setting | Options | What it does |

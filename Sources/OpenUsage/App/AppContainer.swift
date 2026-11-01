@@ -53,6 +53,8 @@ final class AppContainer {
     /// Persists a fresh `ShellEnvironmentSnapshot` once the login-shell capture completes, so the next
     /// launch can read shell-exported facts (provider home overrides) even when its own capture is slow.
     private let shellEnvironmentSnapshotTask: Task<Void, Never>
+    /// Refreshes each enabled hub's cached account list in the background (see `CLIProxyHubAccountSync`).
+    private let hubAccountSyncTask: Task<Void, Never>
 
     /// `isFreshInstall` must be captured by the caller BEFORE `SettingsMigrator.migrate()` runs (the
     /// migrator's schema stamp makes the defaults domain non-empty). See `AppDelegate`.
@@ -70,6 +72,9 @@ final class AppContainer {
         // CLIProxyAPI hub cards come from the account lists cached in the hub config: a local file
         // read, never a hub call, so an unreachable hub can't hold up launch.
         let hubCards = await CLIProxyHubCards.loadClaudeRuntimes()
+        // Started after the cards are read, so this launch's cards come from the cache as it was; the
+        // refreshed list shows from the next launch.
+        self.hubAccountSyncTask = Task { await CLIProxyHubAccountSync.run() }
 
         let providers = ProviderCatalog.make(
             claudeCards: accountAssembly.claudeCards,

@@ -4,10 +4,12 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] After launch, an `auth-files` call per enabled hub runs off the launch path and writes the cached `accounts` back to the config. The rest of the config, including the key, stays as it was.
-- [ ] A failed sync keeps the old cache and is logged loudly ("The hub could not list accounts."). Cards keep working.
-- [ ] Disabled hubs are skipped. Accounts disabled on the hub drop out of the cache.
-- [ ] Tests cover a successful sync, a failure keeping the cache, and a write that preserves the other fields.
+- [x] After launch, an `auth-files` call per enabled hub runs off the launch path and writes the cached `accounts` back to the config. The rest of the config, including the key, stays as it was.
+- [x] A failed sync keeps the old cache and is logged loudly ("The hub could not list accounts."). Cards keep working.
+- [x] Disabled hubs are skipped. Accounts disabled on the hub drop out of the cache.
+- [x] Tests cover a successful sync, a failure keeping the cache, and a write that preserves the other fields.
 - [ ] Smoke test: empty the cache, relaunch twice, and see the cards appear on the second launch.
+
+- 2026-11-01, branch `issue/03-background-account-sync`: background `auth-files` sync per enabled hub after launch writes the cached `accounts` back to the config, preserving other fields; failures keep the cache and log loudly. Fix round: synced accounts are written to the enabled entry that was read (39e7311e). Tests: full suite at 39e7311e passed (OpenUsageTests 1710, 4 skipped, 0 failures; OpenUsageCLITests 4, 0 failures). Reviews: round 1 APPROVED, round 2 APPROVED (one optional nit, mixed-case id test, not taken). Smoke test not run.

@@ -26,6 +26,13 @@ Hubs live in `~/.config/openusage/cliproxy.json`:
 
 - `accounts` is the hub's account list as OpenUsage last saw it. Cards are built from this list at
   launch, so launch never waits on the hub, and a hub that's down still shows its cards (with an error).
+- After launch, OpenUsage asks each enabled hub for its accounts in the background and saves the list
+  into `accounts`. Added accounts get cards from the next launch; accounts removed or disabled on the
+  hub drop out. Disabled hubs are skipped.
+- Saving rewrites the whole file: every setting above keeps its value, but keys OpenUsage doesn't know
+  are dropped, a left-out `enabled` is written as `true`, and the formatting is normalized.
+- If a hub can't list its accounts, the old list is kept and the failure is logged ("The hub could not
+  list accounts."). Its cards keep working.
 - `enabled` and `accounts` can be left out: a hub is on by default and starts with no cards.
 - The file holds management keys and is written readable by your user only.
 

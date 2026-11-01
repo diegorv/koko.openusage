@@ -36,6 +36,8 @@ final class AppContainer {
     /// One-time onboarding state (the first-run Customize hint card). Only ever marked pending by
     /// `FirstRunSeeder` on a fresh install, so existing installs never see the card.
     let onboarding: OnboardingStore
+    /// Raised when the background hub sync finds a different set of hub accounts than this launch's cards.
+    let hubRelaunchNotice: CLIProxyHubRelaunchNotice
     /// Claims Codex reset credits and Claude reset grants from the resets popover (the app's only
     /// provider-API writes), keyed by provider id. Each service shares its card's credentials. The view
     /// tree selects the matching service from `\.resetClaims` for each card's resets popover.
@@ -74,7 +76,11 @@ final class AppContainer {
         let hubCards = await CLIProxyHubCards.loadRuntimes()
         // Started after the cards are read, so this launch's cards come from the cache as it was; the
         // refreshed list shows from the next launch.
-        self.hubAccountSyncTask = Task { await CLIProxyHubAccountSync.run() }
+        let hubRelaunchNotice = CLIProxyHubRelaunchNotice()
+        self.hubRelaunchNotice = hubRelaunchNotice
+        self.hubAccountSyncTask = Task {
+            if await CLIProxyHubAccountSync.run() { hubRelaunchNotice.markChanged() }
+        }
 
         let providers = ProviderCatalog.make(
             claudeCards: accountAssembly.claudeCards,

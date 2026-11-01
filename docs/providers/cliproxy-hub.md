@@ -29,6 +29,9 @@ Hubs live in `~/.config/openusage/cliproxy.json`:
 - After launch, OpenUsage asks each enabled hub for its accounts in the background and saves the list
   into `accounts`. Added accounts get cards from the next launch; accounts removed or disabled on the
   hub drop out. Disabled hubs are skipped.
+- When that list adds or drops an account, the dashboard shows a "Hub Accounts Changed" notice with
+  a Relaunch button, since cards only change on relaunch. A new email or plan on the same accounts,
+  or a hub that can't be reached, shows no notice.
 - Saving rewrites the whole file: every setting above keeps its value, but keys OpenUsage doesn't know
   are dropped, a left-out `enabled` is written as `true`, and the formatting is normalized.
 - If a hub can't list its accounts, the old list is kept and the failure is logged ("The hub could not

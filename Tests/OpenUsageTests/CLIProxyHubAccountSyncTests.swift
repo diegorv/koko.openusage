@@ -121,6 +121,123 @@ final class CLIProxyHubAccountSyncTests: XCTestCase {
         XCTAssertEqual(files.files[path], before)
     }
 
+    // MARK: - Change detection (drives the "Hub Accounts Changed" notice)
+
+    func testAddedAccountIsAChange() async throws {
+        let (store, _) = try seed([hub("one", accounts: [])])
+        let http = RoutingHTTPClient { _ in Self.json(Self.authFiles) }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertTrue(changed)
+    }
+
+    func testRemovedAccountIsAChange() async throws {
+        let extra = account("claude-gone.json", authIndex: "g1", email: "gone@example.com")
+        let (store, _) = try seed([hub("one", accounts: [newAccount, extra])])
+        let http = RoutingHTTPClient { _ in Self.json(Self.authFiles) }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertTrue(changed)
+    }
+
+    func testAccountDisabledOnTheHubIsAChange() async throws {
+        // `authFiles` lists claude-old.json as disabled, so it drops out of the fetched list.
+        let (store, _) = try seed([hub("one", accounts: [newAccount, oldAccount])])
+        let http = RoutingHTTPClient { _ in Self.json(Self.authFiles) }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertTrue(changed)
+    }
+
+    func testUnchangedListIsNoChange() async throws {
+        let (store, _) = try seed([hub("one", accounts: [newAccount])])
+        let http = RoutingHTTPClient { _ in Self.json(Self.authFiles) }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertFalse(changed)
+    }
+
+    func testDetailChangeOnTheSameAccountsUpdatesTheCacheButIsNoChange() async throws {
+        let stale = account("claude-new.json", authIndex: "n0", email: "renamed@example.com")
+        let (store, _) = try seed([hub("one", accounts: [stale])])
+        let http = RoutingHTTPClient { _ in Self.json(Self.authFiles) }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertFalse(changed)
+        XCTAssertEqual(try store.load().hubs.map(\.accounts), [[newAccount]])
+    }
+
+    func testReorderedAccountsAreNoChange() {
+        let a = account("a.json", authIndex: "a", email: "a@example.com")
+        let b = account("b.json", authIndex: "b", email: "b@example.com")
+
+        XCTAssertFalse(CLIProxyHubAccountSync.accountSetChanged(cached: [a, b], fetched: [b, a]))
+        XCTAssertTrue(CLIProxyHubAccountSync.accountSetChanged(cached: [a, b], fetched: [a]))
+        XCTAssertTrue(CLIProxyHubAccountSync.accountSetChanged(cached: [a], fetched: [a, b]))
+    }
+
+    func testFailedSyncIsNoChange() async throws {
+        let (store, _) = try seed([hub("down", accounts: []), hub("error", accounts: [])])
+        let http = RoutingHTTPClient { request in
+            if request.url.host == "down.example" { throw URLError(.cannotConnectToHost) }
+            return Self.json("oops", status: 500)
+        }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertFalse(changed)
+    }
+
+    func testDisabledHubIsNoChange() async throws {
+        let (store, _) = try seed([hub("off", enabled: false, accounts: [])])
+        let http = RoutingHTTPClient { _ in Self.json(Self.authFiles) }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertFalse(changed)
+    }
+
+    func testOneHubChangingIsAChangeEvenWhenAnotherFails() async throws {
+        let (store, _) = try seed([hub("down", accounts: []), hub("up", accounts: [])])
+        let http = RoutingHTTPClient { request in
+            if request.url.host == "down.example" { throw URLError(.cannotConnectToHost) }
+            return Self.json(Self.authFiles)
+        }
+
+        let changed = await CLIProxyHubAccountSync.run(store: store, http: http)
+
+        XCTAssertTrue(changed)
+    }
+
+    @MainActor
+    func testNoticeIsPendingAfterAChangeUntilDismissed() {
+        let notice = CLIProxyHubRelaunchNotice()
+        XCTAssertFalse(notice.isPending)
+
+        notice.markChanged()
+        XCTAssertTrue(notice.isPending)
+
+        notice.dismiss()
+        XCTAssertFalse(notice.isPending)
+    }
+
+    @MainActor
+    func testRelaunchThatCannotStartTheHelperReportsTheFailure() {
+        let notice = CLIProxyHubRelaunchNotice()
+        notice.markChanged()
+        XCTAssertFalse(notice.relaunchFailed)
+
+        notice.relaunch(shell: URL(fileURLWithPath: "/nonexistent/sh"))
+
+        XCTAssertTrue(notice.relaunchFailed)
+        XCTAssertTrue(notice.isPending)
+    }
+
     // MARK: - Helpers
 
     /// Runs `body` with `AppLog` writing to a temporary file, and returns what was logged.

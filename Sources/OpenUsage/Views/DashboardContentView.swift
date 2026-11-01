@@ -31,6 +31,11 @@ struct DashboardContentView: View {
                         .padding(.bottom, density.sectionSpacing)
                         .transition(.scale(scale: 0.95).combined(with: .opacity))
                 }
+                if container.hubRelaunchNotice.isPending {
+                    HubAccountsChangedCard(notice: container.hubRelaunchNotice)
+                        .padding(.bottom, density.sectionSpacing)
+                        .transition(.scale(scale: 0.95).combined(with: .opacity))
+                }
                 // The one-time first-run hint sits above the provider sections (and above the
                 // empty-state line, which a fresh install can hit while nothing has data yet).
                 if container.onboarding.isCustomizeHintPending {
@@ -43,6 +48,7 @@ struct DashboardContentView: View {
             .animation(Motion.spring, value: container.onboarding.isCustomizeHintPending)
             .animation(Motion.spring, value: container.onboarding.isNewVersionNoticeDismissed)
             .animation(Motion.spring, value: updater.availableUpdateVersion)
+            .animation(Motion.spring, value: container.hubRelaunchNotice.isPending)
             .padding(.horizontal, horizontalPadding)
             .padding(.top, density.contentTopPadding)
             .padding(.bottom, bottomGap)

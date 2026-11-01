@@ -41,7 +41,7 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 | 04 | [Codex Hub Cards](issues/04-codex-hub-cards.md) | 02 | done | issue/04-codex-hub-cards (917b9011) | 2026-11-01 |
 | 05 | [Relaunch Prompt When Hub Accounts Change](issues/05-relaunch-prompt-on-account-changes.md) | 03 | done | issue/05-relaunch-prompt-on-account-changes (1906e77b) | 2026-11-01 |
 | 06 | [Hub Wins Over the Same Local Account](issues/06-hub-wins-over-local-account.md) | 04 | done | issue/06-hub-wins-over-local-account (a05266f2) | 2026-11-01 |
-| 07 | ["Add Hub" in Settings](issues/07-add-hub-settings.md) | 05 | in-progress | | |
+| 07 | ["Add Hub" in Settings](issues/07-add-hub-settings.md) | 05 | done | issue/07-add-hub-settings (de2f497b) | 2026-11-01 |
 
 ## Log
 
@@ -59,3 +59,4 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 - 2026-11-01 18:00 — 06 — start — launched by /relay-lite:run — b23f3dc0
 - 2026-11-01 18:13 — 06 — deliver — squash-merged as a05266f2; reviews APPROVED → APPROVED; full suite 1742 tests 0 failures; open: Codex match by account id hides other Team seats — a05266f2
 - 2026-11-01 18:14 — 07 — start — launched by /relay-lite:run — 84375894
+- 2026-11-01 18:36 — 07 — deliver — squash-merged; reviews CHANGES_REQUESTED → APPROVED; full suite 1757 tests 0 failures; UI not checked by hand — de2f497b

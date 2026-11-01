@@ -1,0 +1,15 @@
+{
+  "base": "main",
+  "remote": "fork",
+  "delivery": "merge",
+  "checks": {
+    "setup": "swift package resolve",
+    "typecheck": "swift build",
+    "testFile": "swift test --filter \"$(basename <file> .swift)\"",
+    "suite": "swift test"
+  },
+  "reReviews": 1,
+  "codex": null,
+  "docs": [],
+  "rules": []
+}

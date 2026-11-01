@@ -28,7 +28,8 @@ This check happens **once per provider**. After that, the provider is yours to m
 If an account is signed in both on this Mac and on a CLIProxyAPI hub, only the hub card shows. The local card is left out at launch, and its spend history is hidden with it.
 
 - **Claude** accounts are the same when their email matches. This hides every local card with that email, in every organization, even when the hub holds a login for only one of them.
-- **Codex** accounts are the same when their ChatGPT account id matches. When either side doesn't know the id, the email decides. The same email in a different workspace is a different account.
+- **Codex** accounts are the same when their ChatGPT account id matches (Team seats also need a matching email, see below). When either side doesn't know the id, the email decides. The same email in a different workspace is a different account.
+- **Codex Team seats** share their workspace's account id, so when both sides also have an email, the emails must match too (case doesn't matter). Another seat of the same Team workspace keeps its own local card. When only one side has an email, the account id alone decides.
 - Only that local card is affected. Other local cards show as usual, and the hidden card's on/off setting is kept.
 - To bring the local card back, turn the hub off or remove it in Settings → CLIProxyAPI Hubs, or remove or disable the account on the hub; it comes back on the next launch. Turning the hub card off in Customize does not bring it back: the account then shows nowhere.
 

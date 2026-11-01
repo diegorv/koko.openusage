@@ -52,7 +52,8 @@ saved in `~/.config/openusage/cliproxy.json`, which can also be edited by hand:
 - The new-provider check skips hub cards too.
 - If the same account is also signed in on this Mac, only the hub card shows: the local card, and its
   spend history, is left out at launch. Claude accounts match by email; Codex accounts match by ChatGPT
-  account id, or by email when either side lacks the id. See
+  account id, or by email when either side lacks the id. Two seats of one ChatGPT Team workspace share
+  the id, so when both sides have an email it must match too. See
   [Which Providers Are On](../provider-enablement.md#when-a-hub-holds-the-same-account).
 - Hub cards also appear in the `openusage` CLI and the local HTTP API, as part of the `claude` or
   `codex` family.

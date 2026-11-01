@@ -42,8 +42,8 @@ final class CLIProxyHubLocalMatchTests: XCTestCase {
             CLIProxyHubLocalAccount(cardID: "codex-c", family: .codex, email: "c@example.com", chatgptAccountID: "acct-c"),
         ]
         let hub = Self.runtimes([Self.hub(accounts: [
-            // Same id, different email: still the same account.
-            Self.codex("a.json", email: "renamed@example.com", accountID: "ACCT-A"),
+            // Same id, same email (case differs): the same seat.
+            Self.codex("a.json", email: "A@Example.com", accountID: "ACCT-A"),
             // The hub doesn't know the id: email decides.
             Self.codex("b.json", email: "B@example.com", accountID: nil),
             // Same email, different workspace: a different usage pool, not a match.
@@ -51,6 +51,27 @@ final class CLIProxyHubLocalMatchTests: XCTestCase {
         ])])
 
         XCTAssertEqual(CLIProxyHubCards.hiddenLocalCardIDs(local: local, hub: hub), ["codex-a", "codex-b"])
+    }
+
+    /// Seats of one ChatGPT Team workspace share the account id, so the email tells them apart when
+    /// both sides have one.
+    func testCodexTeamSeatsWithTheSameAccountIDMatchOnlyWithTheSameEmail() {
+        let local = [
+            CLIProxyHubLocalAccount(cardID: "codex-other-seat", family: .codex, email: "b@example.com", chatgptAccountID: "team"),
+            CLIProxyHubLocalAccount(cardID: "codex-no-email", family: .codex, email: nil, chatgptAccountID: "team-2"),
+            CLIProxyHubLocalAccount(cardID: "codex-hub-no-email", family: .codex, email: "c@example.com", chatgptAccountID: "team-3"),
+        ]
+        let hub = Self.runtimes([Self.hub(accounts: [
+            // Same id, different email: another seat, both cards show.
+            Self.codex("a.json", email: "a@example.com", accountID: "team"),
+            // Email on only one side: the id decides.
+            Self.codex("b.json", email: "x@example.com", accountID: "team-2"),
+            Self.codex("c.json", email: nil, accountID: "team-3"),
+        ])])
+
+        XCTAssertEqual(
+            CLIProxyHubCards.hiddenLocalCardIDs(local: local, hub: hub), ["codex-no-email", "codex-hub-no-email"]
+        )
     }
 
     func testNoMatchAcrossFamiliesOrWithoutAnEmail() {

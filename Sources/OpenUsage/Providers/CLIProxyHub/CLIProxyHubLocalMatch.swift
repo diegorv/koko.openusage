@@ -67,12 +67,16 @@ extension CLIProxyHubCards {
     }
 
     /// Claude matches by email. Codex matches by ChatGPT account id when both sides know it, and by
-    /// email otherwise: the same email in another workspace is a different usage pool.
+    /// email otherwise: the same email in another workspace is a different usage pool. Seats of one
+    /// ChatGPT Team workspace share the account id, so when both sides also have an email it must
+    /// agree (owner decision).
     static func matches(_ local: CLIProxyHubLocalAccount, _ hub: CLIProxyHubAccount) -> Bool {
         guard local.family == hub.provider else { return false }
         if local.family == .codex, let localID = normalized(local.chatgptAccountID),
            let hubID = normalized(hub.chatgptAccountID) {
-            return localID == hubID
+            guard localID == hubID else { return false }
+            guard let localEmail = normalized(local.email), let hubEmail = normalized(hub.email) else { return true }
+            return localEmail == hubEmail
         }
         guard let localEmail = normalized(local.email) else { return false }
         return localEmail == normalized(hub.email)

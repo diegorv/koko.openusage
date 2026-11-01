@@ -36,7 +36,7 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 | # | Issue | Blocked by | Status | Branch / PR | Merged |
 |---|---|---|---|---|---|
 | 01 | [Hub Client and Transport Adapter](issues/01-hub-client-and-transport.md) | none | done | issue/01-hub-client-and-transport (eb275dcb) | 2026-11-01 |
-| 02 | [Claude Hub Cards From the Cached Account List](issues/02-claude-hub-cards-from-cache.md) | 01 | in-progress | | |
+| 02 | [Claude Hub Cards From the Cached Account List](issues/02-claude-hub-cards-from-cache.md) | 01 | done | issue/02-claude-hub-cards-from-cache (9844ad69) | 2026-11-01 |
 | 03 | [Background Hub Account Sync](issues/03-background-account-sync.md) | 02 | todo | | |
 | 04 | [Codex Hub Cards](issues/04-codex-hub-cards.md) | 02 | todo | | |
 | 05 | [Relaunch Prompt When Hub Accounts Change](issues/05-relaunch-prompt-on-account-changes.md) | 03 | todo | | |
@@ -49,3 +49,4 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 - 2026-11-01 16:36 — 01 — start — launched by /relay-lite:run — ee197746
 - 2026-11-01 16:54 — 01 — deliver — squash-merged as eb275dcb; reviews CHANGES_REQUESTED → APPROVED → APPROVED; full suite 1681 tests 0 failures; one criterion unticked (fixtures not ported verbatim from t3code) — eb275dcb
 - 2026-11-01 16:54 — 02 — start — launched by /relay-lite:run — 0bd9f66c
+- 2026-11-01 17:20 — 02 — deliver — squash-merged as 9844ad69; reviews CHANGES_REQUESTED → APPROVED; full suite 1703 tests 0 failures; smoke test unticked (no cached hub accounts); broken cliproxy.json surfacing deferred to 07 — 9844ad69

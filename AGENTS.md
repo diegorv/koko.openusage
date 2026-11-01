@@ -77,3 +77,17 @@ Always fail loudly into error logging (log file, PostHog) and show friendly erro
 - Use title case for any hardcoded copy used as a title.
 - Match the existing design language; OpenUsage has a specific look and feel.
 - Only add tooltips (`hoverTooltip`) when explicitly asked to. Don't add them proactively to new controls.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live as local markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default triage roles, used as-is. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.

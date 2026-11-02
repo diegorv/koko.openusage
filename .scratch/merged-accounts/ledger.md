@@ -37,7 +37,7 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 |---|---|---|---|---|---|
 | 01 | [One Merged Card per Provider](issues/01-merged-provider-card.md) | none | done | issue/01-merged-provider-card (dcabec34) | 2026-11-02 |
 | 02 | [Menu Bar Shows the Merged Value](issues/02-merged-menu-bar.md) | 01 | done | issue/02-merged-menu-bar (3a4e82bb) | 2026-11-02 |
-| 03 | [Hide Claude's Session Row When It Has No Data](issues/03-hide-empty-claude-session.md) | 01 | in-progress | | |
+| 03 | [Hide Claude's Session Row When It Has No Data](issues/03-hide-empty-claude-session.md) | 01 | done | issue/03-hide-empty-claude-session (68c0fcf2) | 2026-11-02 |
 
 ## Log
 
@@ -48,3 +48,4 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 - 2026-11-02 07:03 — 02 — deliver — squash-merged into feature/merged-accounts as 3a4e82bb; reviews APPROVED → APPROVED; full suite 1798+4 tests 0 failures; open: starring a non-base account does nothing — 3a4e82bb
 - 2026-11-02 10:09 — ledger updated (added 03)
 - 2026-11-02 10:09 — 03 — start — launched by /relay-lite:run — 4cb6c44b
+- 2026-11-02 10:19 — 03 — deliver — squash-merged into feature/merged-accounts as 68c0fcf2; review APPROVED; full suite 1807 tests 0 failures; dashboard not checked by eye — 68c0fcf2

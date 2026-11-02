@@ -52,7 +52,7 @@ final class WidgetDataStore {
     /// nothing else stops the loop from re-probing a broken provider (logged-out Devin/Grok especially)
     /// on every wake, spawning subprocesses and network calls in a tight loop. This negative-cache caps a
     /// failing provider to one probe per window. Shorter than the refresh interval, so the normal
-    /// 5-minute heartbeat always retries; it only suppresses the sub-interval re-probes a wake burst
+    /// 10-minute heartbeat always retries; it only suppresses the sub-interval re-probes a wake burst
     /// would cause. The manual `force` refresh (⌘R) always bypasses it.
     private static let failureRetryBackoff: TimeInterval = 60
     static let defaultSlowProviderRefreshThreshold: TimeInterval = 10
@@ -94,7 +94,7 @@ final class WidgetDataStore {
     @ObservationIgnored private let notificationEvaluator = QuotaNotificationEvaluator()
 
     /// Telemetry hook wired by `AppContainer`. Invoked once per *real* provider fetch — `.refreshed` or
-    /// `.failed` only, never the cache-hit/skip/backoff outcomes that the 5-minute timer produces in
+    /// `.failed` only, never the cache-hit/skip/backoff outcomes that the 10-minute timer produces in
     /// bulk — so the recorder can roll daily usage and error counts up into one event per provider per
     /// day. `nil` (and so a no-op) in tests and previews. Not observable UI state.
     @ObservationIgnored var onRefreshOutcome: (@MainActor (String, RefreshOutcome, ErrorCategory?, Bool) -> Void)?
@@ -418,7 +418,7 @@ final class WidgetDataStore {
     /// Clears a provider's failure backoff so the next pass probes it immediately. Called when the user
     /// re-enables a provider: the enablement wake exists to fetch promptly, so a stale backoff from a
     /// failure just before it was turned off must not suppress that fetch (the loop wouldn't otherwise
-    /// retry until the 5-minute heartbeat). The periodic loop never calls this — only the user action does.
+    /// retry until the 10-minute heartbeat). The periodic loop never calls this — only the user action does.
     func clearFailureBackoff(for providerID: String) {
         failureRetryAfter[providerID] = nil
     }

@@ -12,7 +12,7 @@ openusage codex --force   # refresh through the shared provider engine, cache, p
 ```
 
 The command and app import the same providers, authentication stores, pricing, refresh coordinator, and
-snapshot cache. A normal read reuses snapshots less than five minutes old and refreshes missing or stale
+snapshot cache. A normal read reuses snapshots less than ten minutes old and refreshes missing or stale
 ones. `--force` is the CLI equivalent of the app's manual refresh: it bypasses that freshness gate and
 writes successful results to the same cache. Credentials are used locally and never appear in the output.
 

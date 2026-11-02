@@ -11,7 +11,7 @@ struct TelemetryConfigSnapshot: Sendable {
 }
 
 /// Turns raw refresh outcomes into the two daily-rollup events, enforcing "at most one event per day"
-/// without flooding the pipeline from the 5-minute refresh timer (~1,440 outcomes/user/day).
+/// without flooding the pipeline from the 10-minute refresh timer.
 ///
 /// - `app_daily_active`: emitted once per local day (DAU + the config snapshot), driven by `tick()`.
 ///   Gated on the Settings toggle, like everything else.

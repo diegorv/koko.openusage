@@ -35,9 +35,10 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 
 | # | Issue | Blocked by | Status | Branch / PR | Merged |
 |---|---|---|---|---|---|
-| 01 | [Money Values Carry Their Currency](issues/01-money-values-carry-currency.md) | none | in-progress | | |
+| 01 | [Money Values Carry Their Currency](issues/01-money-values-carry-currency.md) | none | done | issue/01-money-values-carry-currency (94216d0f) | 2026-11-01 |
 
 ## Log
 
 - 2026-11-01 21:50 — ledger created (1 Issues)
 - 2026-11-01 21:50 — 01 — start — launched by /relay-lite:run — 8ea2bd4a
+- 2026-11-01 22:06 — 01 — deliver — squash-merged; reviews APPROVED → APPROVED; full suite 1771+4 tests 0 failures; money values carry currency, Claude extra usage uses extra_usage.currency — 94216d0f

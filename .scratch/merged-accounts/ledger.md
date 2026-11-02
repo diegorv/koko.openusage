@@ -36,7 +36,7 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 | # | Issue | Blocked by | Status | Branch / PR | Merged |
 |---|---|---|---|---|---|
 | 01 | [One Merged Card per Provider](issues/01-merged-provider-card.md) | none | done | issue/01-merged-provider-card (dcabec34) | 2026-11-02 |
-| 02 | [Menu Bar Shows the Merged Value](issues/02-merged-menu-bar.md) | 01 | in-progress | | |
+| 02 | [Menu Bar Shows the Merged Value](issues/02-merged-menu-bar.md) | 01 | done | issue/02-merged-menu-bar (3a4e82bb) | 2026-11-02 |
 
 ## Log
 
@@ -44,3 +44,4 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 - 2026-11-02 06:21 — 01 — start — launched by /relay-lite:run — cfb73c75
 - 2026-11-02 06:52 — 01 — deliver — squash-merged into feature/merged-accounts as dcabec34; reviews CHANGES_REQUESTED → APPROVED → APPROVED; full suite 1794 tests 0 failures; open: money/count bounded bars fill total used / total limit — dcabec34
 - 2026-11-02 06:52 — 02 — start — launched by /relay-lite:run — aae1f56a
+- 2026-11-02 07:03 — 02 — deliver — squash-merged into feature/merged-accounts as 3a4e82bb; reviews APPROVED → APPROVED; full suite 1798+4 tests 0 failures; open: starring a non-base account does nothing — 3a4e82bb

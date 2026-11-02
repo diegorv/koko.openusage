@@ -64,5 +64,5 @@ analytics toggle controls all PostHog events.
 
 - Data is fully anonymous: OpenUsage never identifies you to the analytics service and creates no user profile.
 - With the toggle off, the analytics service isn't even started, so it makes no network calls.
-- Counts are rolled up locally and sent as daily summaries, so the app's normal 5-minute refresh never turns into a flood of network calls.
+- Counts are rolled up locally and sent as daily summaries, so the app's normal 10-minute refresh never turns into a flood of network calls.
 - Your choice and the anonymous ID are stored separately from the rest of the app's settings, so settings migrations and updates never turn telemetry back on or change your ID.

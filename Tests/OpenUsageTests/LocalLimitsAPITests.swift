@@ -51,7 +51,7 @@ final class LocalLimitsAPITests: XCTestCase {
         XCTAssertEqual(root["generatedAt"] as? String, "2026-07-13T01:40:00.000Z")
         XCTAssertEqual(providerJSON["plan"] as? String, "Pro 200")
         XCTAssertEqual(providerJSON["fetchedAt"] as? String, "2026-07-13T01:39:30.000Z")
-        XCTAssertEqual(providerJSON["expiresAt"] as? String, "2026-07-13T01:44:30.000Z")
+        XCTAssertEqual(providerJSON["expiresAt"] as? String, "2026-07-13T01:49:30.000Z")
         XCTAssertEqual(providerJSON["stale"] as? Bool, false)
         XCTAssertEqual(sessionJSON["kind"] as? String, "consumption")
         XCTAssertEqual(sessionJSON["unit"] as? String, "percent")

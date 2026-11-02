@@ -82,7 +82,7 @@ final class FailureBackoffTests: XCTestCase {
 
     func testClearingBackoffAllowsImmediateReprobe() async {
         // The re-enable path: clearing the backoff must let the very next pass probe, even inside the
-        // window, so a just-re-enabled provider isn't stuck on stale data until the 5-minute heartbeat.
+        // window, so a just-re-enabled provider isn't stuck on stale data until the 10-minute heartbeat.
         var clock = Date(timeIntervalSince1970: 1_800_000_000)
         let runtime = makeFailingRuntime()
         let store = makeStore(runtime: runtime, clock: { clock })

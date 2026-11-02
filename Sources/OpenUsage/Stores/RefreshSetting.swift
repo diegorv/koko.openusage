@@ -7,6 +7,6 @@ import Foundation
 /// re-fetches when that window elapses. The cadence is fixed — there's no user-facing control — so the
 /// two always line up.
 enum RefreshSetting {
-    static let defaultMinutes = 5
+    static let defaultMinutes = 10
     static let interval = TimeInterval(defaultMinutes * 60)
 }

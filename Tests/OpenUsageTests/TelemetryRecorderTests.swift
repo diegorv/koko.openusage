@@ -1,7 +1,7 @@
 import XCTest
 @testable import OpenUsage
 
-/// Covers the daily-rollup/dedup contract of `TelemetryRecorder`: the 5-minute refresh timer produces
+/// Covers the daily-rollup/dedup contract of `TelemetryRecorder`: the 10-minute refresh timer produces
 /// ~1,440 outcomes/user/day, so the recorder must collapse them into at most one event per provider
 /// per day (and one `app_daily_active` per day), drop cache/skip/backoff noise, classify errors, and
 /// send nothing at all while telemetry is off (the default).

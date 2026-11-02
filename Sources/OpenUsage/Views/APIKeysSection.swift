@@ -241,7 +241,7 @@ struct APIKeysSection: View {
 
     /// Clear any failure backoff so the wake refresh actually probes the provider, then force a
     /// refresh so the dashboard shows the new key's data immediately instead of waiting for the next
-    /// 5-minute pass. No-op for the refresh if the provider is disabled — the key is still saved.
+    /// 10-minute pass. No-op for the refresh if the provider is disabled — the key is still saved.
     private func triggerRefresh() {
         let id = provider.provider.id
         dataStore.clearFailureBackoff(for: id)

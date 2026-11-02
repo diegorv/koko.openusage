@@ -287,7 +287,7 @@ final class AppContainer {
     /// The wake is deliberately scoped to `ProviderEnablementStore.didChangeNotification` — NOT the
     /// firehose `UserDefaults.didChangeNotification`, which fires for the app's own snapshot-cache writes,
     /// Sparkle's update bookkeeping, and unrelated global-domain changes from other processes. Waking on
-    /// that, with no minimum interval before re-refreshing, collapsed the fixed 5-minute cadence into a
+    /// that, with no minimum interval before re-refreshing, collapsed the fixed 10-minute cadence into a
     /// refresh storm.
     private static func startPeriodicRefresh(dataStore: WidgetDataStore, telemetry: TelemetryRecorder) -> Task<Void, Never> {
         Task {

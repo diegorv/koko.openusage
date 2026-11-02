@@ -9,9 +9,9 @@ import XCTest
 final class RefreshSettingTests: XCTestCase {
     // MARK: - Fixed cadence
 
-    func testCadenceIsFixedAtFiveMinutes() {
-        XCTAssertEqual(RefreshSetting.defaultMinutes, 5)
-        XCTAssertEqual(RefreshSetting.interval, 300)
+    func testCadenceIsFixedAtTenMinutes() {
+        XCTAssertEqual(RefreshSetting.defaultMinutes, 10)
+        XCTAssertEqual(RefreshSetting.interval, 600)
     }
 
     // MARK: - Session-scoped freshness
@@ -20,7 +20,7 @@ final class RefreshSettingTests: XCTestCase {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
         let suite = makeDefaults("restart-within")
 
-        // A prior session left a snapshot 4 minutes ago — inside the 5-minute interval.
+        // A prior session left a snapshot 4 minutes ago — inside the 10-minute interval.
         storeSnapshot(used: 20, age: 240, into: suite, now: now)
 
         // A fresh store/cache (= relaunch) loads it from disk for instant paint…
@@ -42,13 +42,13 @@ final class RefreshSettingTests: XCTestCase {
         let suite = makeDefaults("within-session")
 
         // One cache instance shared between the seeding write and the store models a single running
-        // session: the snapshot was fetched 4 minutes ago *this* session, so it short-circuits the pass.
+        // session: the snapshot was fetched 9 minutes ago *this* session, so it short-circuits the pass.
         let cache = ProviderSnapshotCache(userDefaults: suite, storageKey: "snapshots", now: { now })
         cache.store(ProviderSnapshot(
             providerID: "test",
             displayName: "Test",
             lines: [.progress(label: "Session", used: 20, limit: 100, format: .percent)],
-            refreshedAt: now.addingTimeInterval(-240)
+            refreshedAt: now.addingTimeInterval(-540)
         ))
 
         let runtime = makeRuntime(used: 80)

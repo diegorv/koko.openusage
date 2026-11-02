@@ -30,7 +30,7 @@ final class ProviderEnablementStore {
     /// early and fetch a newly-enabled provider promptly, instead of waiting out the full interval —
     /// WITHOUT subscribing to the firehose `UserDefaults.didChangeNotification`, which also fires for the
     /// app's own snapshot-cache writes, Sparkle's update bookkeeping, and unrelated global-domain changes
-    /// from other processes. Waking on that (with no minimum interval) collapsed the fixed 5-minute
+    /// from other processes. Waking on that (with no minimum interval) collapsed the fixed 10-minute
     /// cadence into a refresh storm.
     ///
     /// `nonisolated` so the refresh loop's background task can name it without hopping to the main actor

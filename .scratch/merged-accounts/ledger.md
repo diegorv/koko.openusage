@@ -35,9 +35,10 @@ An Issue can start when its status is `todo` and every Issue in its "Blocked by"
 
 | # | Issue | Blocked by | Status | Branch / PR | Merged |
 |---|---|---|---|---|---|
-| 01 | [One Merged Card per Provider](issues/01-merged-provider-card.md) | none | todo | | |
+| 01 | [One Merged Card per Provider](issues/01-merged-provider-card.md) | none | in-progress | | |
 | 02 | [Menu Bar Shows the Merged Value](issues/02-merged-menu-bar.md) | 01 | todo | | |
 
 ## Log
 
 - 2026-11-02 06:20 — ledger created (2 Issues)
+- 2026-11-02 06:21 — 01 — start — launched by /relay-lite:run — cfb73c75

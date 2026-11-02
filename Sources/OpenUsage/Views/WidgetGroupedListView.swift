@@ -28,13 +28,18 @@ struct WidgetGroupedListView: View {
         // Provider-section spacing is noticeably wider than the in-card row rhythm (so groups
         // still read as groups); the exact step comes from the density setting.
         VStack(alignment: .leading, spacing: density.sectionSpacing) {
-            ForEach(layout.displayGroups) { group in
+            ForEach(shownGroups) { group in
                 section(group)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .onPreferenceChange(ReorderFramePreferenceKey.self) { frameStore.frames = $0 }
         .animation(Motion.spring, value: layout.displayGroups.map(\.provider.id))
+    }
+
+    /// The dashboard's cards without the rows that hide while they have no data.
+    private var shownGroups: [ProviderGroup] {
+        layout.displayGroups.map { dataStore.shownGroup($0, descriptor: layout.descriptor(for:)) }
     }
 
     private func section(_ group: ProviderGroup) -> some View {
@@ -337,7 +342,7 @@ struct WidgetGroupedListView: View {
     }
 
     private func metricTargetIDs(for providerID: String) -> [String] {
-        guard let group = layout.displayGroups.first(where: { $0.provider.id == providerID }) else {
+        guard let group = shownGroups.first(where: { $0.provider.id == providerID }) else {
             return []
         }
         let alwaysShown = group.alwaysShownWidgets.compactMap { layout.descriptor(for: $0)?.id }

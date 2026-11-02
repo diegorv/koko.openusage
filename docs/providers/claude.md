@@ -11,7 +11,7 @@ With two or more accounts on, the dashboard shows them together on one Claude ca
 
 | Metric | Meaning |
 |---|---|
-| Session | 5-hour rolling window usage |
+| Session | 5-hour rolling window usage; the row hides while Anthropic reports no 5-hour window |
 | Weekly | 7-day window usage |
 | Fable | Separate weekly Fable limit (model-scoped window from the `limits` array) |
 | Sonnet | Separate weekly Sonnet limit (plan-dependent) |
@@ -172,3 +172,5 @@ next grant's id and a request id, the same request Claude Code sends; see
 The plan badge reads `GET https://api.anthropic.com/api/oauth/profile` (the organization's `rate_limit_tier`), because the plan Claude Code saves at sign-in never updates afterwards. To stay clear of Anthropic's rate limits, that lookup runs at most once per access token — after a usage fetch has succeeded — and cards bound to a specific account reuse the profile they already fetched to verify identity, so they make no extra request. Inference-only tokens skip it entirely.
 
 When the five-hour session window hasn't begun (the usage API reports no reset time), the Session row shows **Not started** on the trailing label; hover explains that the session begins after your first message. A reported reset time means the window is running, so the row always shows the countdown then — even when Anthropic's whole-percent numbers still read 0% because less than 1% has been used, which matches what Claude Code itself shows.
+
+When Anthropic reports no five-hour window at all (`five_hour: null`, as it does since it dropped the 5-hour limit), the Session row is hidden instead of showing "No data" on every Claude card. It stays enabled and keeps its place: it comes back by itself, on the same cards and in the menu bar if starred, as soon as any account reports the window again. A merged card shows it when at least one of its accounts has it. If Session is a card's only row, it stays and reads "No data".

@@ -70,6 +70,7 @@ enum ShareCardRenderer {
         layout: LayoutStore,
         appearance: ColorScheme
     ) -> Bool {
+        let group = dataStore.shownGroup(group, descriptor: layout.descriptor(for:))
         let isExpanded = layout.isProviderExpanded(group.provider.id)
         let alwaysRows = group.alwaysShownWidgets.compactMap { widget -> WidgetData? in
             guard let descriptor = layout.descriptor(for: widget) else { return nil }

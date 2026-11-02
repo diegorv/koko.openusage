@@ -80,7 +80,10 @@ final class ClaudeProvider: ProviderRuntime {
     static func limitDescriptors(provider: Provider) -> [WidgetDescriptor] {
         [
             .percent(id: "\(provider.id).session", provider: provider, title: "Session", sessionStartSignal: .missingResetDate)
-                .exportingLimit("session", unit: "percent"),
+                .exportingLimit("session", unit: "percent")
+                // Anthropic stopped reporting the five-hour window (`five_hour: null`); hide the row
+                // rather than show "No data" on every card, and let it return if the window does.
+                .hidingWithoutData(),
             .percent(id: "\(provider.id).weekly", provider: provider, title: "Weekly")
                 .exportingLimit("weekly", unit: "percent"),
             .percent(id: "\(provider.id).fable", provider: provider, title: "Fable")

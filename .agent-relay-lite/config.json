@@ -1,5 +1,5 @@
 {
-  "base": "feature/merged-accounts",
+  "base": "main",
   "remote": "fork",
   "delivery": "merge",
   "checks": {

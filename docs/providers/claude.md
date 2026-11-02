@@ -2,8 +2,10 @@
 
 Tracks your Claude subscription limits using the login you already have from Claude Code or Claude Desktop.
 
-Each account and organization gets its own Claude card with separate limits and spending. Signing in to
-the same account and organization through both Claude Code and Claude Desktop still creates only one card.
+Each account and organization is tracked separately, with its own limits and spending. Signing in to
+the same account and organization through both Claude Code and Claude Desktop still counts as one account.
+With two or more accounts on, the dashboard shows them together on one Claude card (see
+[Several accounts of one provider](../dashboard.md#several-accounts-of-one-provider)).
 
 ## What it tracks
 
@@ -90,8 +92,8 @@ made while OpenUsage was refreshing.
 ## Claude Swap accounts
 
 OpenUsage discovers the saved accounts in Claude Swap's `~/.claude-swap-backup/sequence.json`
-on launch. Each account gets a card labeled with its organization followed by its email. A login already found through Claude Code
-or Desktop shares the same card when both the account and organization match. Restart OpenUsage after
+on launch. Each account gets a Customize entry labeled with its organization followed by its email. A login already found through Claude Code
+or Desktop counts as the same account when both the account and organization match. Restart OpenUsage after
 adding or removing a saved account.
 
 If the default login identifies an account but has no organization ID, it remains available as a

@@ -16,6 +16,19 @@ Each provider card leads with its **Always Visible** metrics. When a card is col
 
 When you expand a card, the tucked-away metrics open below the line as a single-column list, so each detail row keeps the full card width.
 
+## Several accounts of one provider
+
+When two or more Claude accounts are on (local logins, Claude Swap, or CLIProxyAPI hub accounts alike), they share one **Claude** card instead of one card each. The same goes for Codex.
+
+- A bar shows the average of the accounts' percentages, in the usual pace color. A thin colored tick per account marks where that account sits on its own.
+- A small key under the rows names each account next to its tick color. When two accounts share a name (two accounts in one organization, one email on two hubs), the key adds the email name or hub label in parentheses.
+- Money and count rows (Today, Last 30 Days, credits) show the sum across the accounts. The reset is the soonest one.
+- An account that doesn't report a metric is left out of that row's average and gets no tick.
+- The Rate Limit Resets popover lists every account's resets but has no **Use** button, since one click can't tell which account to spend. To use a reset, turn the other accounts off so that account has its own card again.
+- With only one account on, the card looks just like a normal card: no ticks and no key.
+
+The merged card uses the first account's metric settings (the plain **Claude** or **Codex** entry in Customize): which metrics show, their order, and Always Visible / On Demand. Turning an account off in Customize removes it from the merged card. Hiding or refreshing the card from its header acts on every account in it.
+
 A provider card can also show **quick-link buttons** pinned at the bottom of its expanded section — Status, Console, Dashboard, and the like — that open the provider's own pages in your default browser. They're part of the expander, so collapsing the caret hides them along with the tucked-away metrics. The caret sits below the links. Buttons lay out up to three across, wrapping to a second row when there are more.
 
 ## Total Spend

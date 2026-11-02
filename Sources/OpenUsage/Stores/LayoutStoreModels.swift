@@ -4,7 +4,17 @@ struct ProviderGroup: Identifiable {
     let provider: Provider
     let alwaysShownWidgets: [PlacedWidget]
     let expandedWidgets: [PlacedWidget]
+    /// The accounts folded into this card when a provider family has two or more enabled accounts
+    /// (`provider` is then the family's base account under the family name). Empty for a normal card.
+    var accounts: [MergedAccount] = []
     var id: String { provider.id }
+
+    /// The provider ids whose data this card shows: every merged account, or just `provider`.
+    var memberIDs: [String] { accounts.isEmpty ? [provider.id] : accounts.map(\.providerID) }
+
+    /// The provider whose reset-claim service the card's resets popover uses. None on a merged card:
+    /// its popover lists every account's credits, and one account's service would spend the wrong one.
+    var resetClaimProviderID: String? { accounts.isEmpty ? provider.id : nil }
 
     /// Every visible widget in display order (always-shown first, then expanded). Used where the split
     /// doesn't matter — reorder id lists and the lifted drag preview.

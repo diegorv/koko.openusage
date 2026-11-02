@@ -105,7 +105,7 @@ final class CodexSwapAccountTests: XCTestCase {
                 defaultExpandedMetricIDs: DefaultLayout.expandingAccounts(DefaultLayout.expandedMetricIDs, providerIDs: ids))
         }
         let fresh = layout()
-        XCTAssertTrue(Set(ids).isSubset(of: Set(fresh.displayGroups.map { $0.provider.id })))
+        XCTAssertTrue(Set(ids).isSubset(of: Set(fresh.displayGroups.flatMap(\.memberIDs))))
         for id in ids {
             XCTAssertTrue(fresh.pinnedMetricIDs.contains(id + ".weekly"))
             XCTAssertTrue(fresh.expandedMetricIDs.contains(id + ".spark"))
@@ -123,7 +123,7 @@ final class CodexSwapAccountTests: XCTestCase {
                 defaultMetricIDs: DefaultLayout.expandingAccounts(DefaultLayout.metricIDs, providerIDs: ids),
                 defaultPinnedMetricIDs: DefaultLayout.expandingAccounts(DefaultLayout.pinnedMetricIDs, providerIDs: ids),
                 defaultExpandedMetricIDs: DefaultLayout.expandingAccounts(DefaultLayout.expandedMetricIDs, providerIDs: ids))
-            XCTAssertTrue(Set(ids).isSubset(of: Set(upgraded.displayGroups.map { $0.provider.id })))
+            XCTAssertTrue(Set(ids).isSubset(of: Set(upgraded.displayGroups.flatMap(\.memberIDs))))
             XCTAssertEqual(upgraded.pinnedMetricIDs, oldPins)
             XCTAssertTrue(upgraded.expandedMetricIDs.contains(try XCTUnwrap(ids.first { $0 != "codex" }) + ".spark"))
         }

@@ -470,6 +470,7 @@ struct WidgetRowView: View {
                         .offset(x: paceTickOffset(track: proxy.size.width, fraction: tick))
                 }
             }
+            .accountTicksOverlay(data, meterHeight: density.meterHeight)
         }
         .frame(height: density.meterHeight)
         .animation(Motion.spring, value: data.fraction)

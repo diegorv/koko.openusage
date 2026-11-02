@@ -47,12 +47,15 @@ struct WidgetGroupedListView: View {
     }
 
     private func header(_ group: ProviderGroup) -> some View {
-        ProviderSectionHeader(
+        // A merged card speaks for all of its accounts: the first plan / notice / staleness any of
+        // them has, and a spinner while any of them refreshes.
+        let members = group.memberIDs
+        return ProviderSectionHeader(
             provider: group.provider,
-            plan: dataStore.plan(for: group.provider.id),
-            warning: dataStore.headerNotice(for: group.provider.id),
-            refreshing: dataStore.refreshingProviderIDs.contains(group.provider.id),
-            staleness: dataStore.stalenessHint(for: group.provider.id),
+            plan: members.lazy.compactMap { dataStore.plan(for: $0) }.first,
+            warning: members.lazy.compactMap { dataStore.headerNotice(for: $0) }.first,
+            refreshing: members.contains { dataStore.refreshingProviderIDs.contains($0) },
+            staleness: members.lazy.compactMap { dataStore.stalenessHint(for: $0) }.first,
             onCopyScreenshot: { shareCard(group) }
         )
         // Keep the provider mark and hover-revealed copy control aligned with the card's content edges.
@@ -62,12 +65,10 @@ struct WidgetGroupedListView: View {
             // Hides the whole provider section (the Customize provider list brings it back). Mirrors
             // the per-metric "Hide" but one level up, so the verb order reads the same on a header as a row.
             Button("Hide \(group.provider.displayName)") {
-                container.enablement.setEnabled(false, for: group.provider.id)
+                for id in members { container.enablement.setEnabled(false, for: id) }
             }
             Divider()
-            Button("Refresh \(group.provider.displayName)") {
-                Task { await dataStore.refreshOnUserRequest(providerID: group.provider.id) }
-            }
+            Button("Refresh \(group.provider.displayName)") { refresh(group) }
             Button("Customize…") {
                 openCustomize(for: group.provider.id)
             }
@@ -109,6 +110,8 @@ struct WidgetGroupedListView: View {
         /// bottom of the collapsible expanded section. They collapse with the caret — part of the
         /// expander, not always-visible chrome.
         case links([ProviderLink])
+        /// A merged card's account key: each account's short name beside its tick color.
+        case legend([MergedAccount])
 
         var id: String {
             switch self {
@@ -120,6 +123,8 @@ struct WidgetGroupedListView: View {
                 "expand-toggle"
             case .links:
                 "provider-links"
+            case .legend:
+                "account-legend"
             }
         }
     }
@@ -130,8 +135,8 @@ struct WidgetGroupedListView: View {
         // recomputed several times per row (twice per adjacent pair plus once in `row`).
         let providerID = group.provider.id
         let isExpanded = layout.isProviderExpanded(providerID)
-        let alwaysRows = resolvedRows(group.alwaysShownWidgets)
-        let expandedRows = resolvedRows(group.expandedWidgets)
+        let alwaysRows = resolvedRows(group.alwaysShownWidgets, in: group)
+        let expandedRows = resolvedRows(group.expandedWidgets, in: group)
         // Text-row condensing stays within Always Visible and On Demand groups; it never crosses
         // their separator. While collapsed, only the Always Visible group is passed through.
         let condensedIDs = visibleCondensedTextRowIDs(alwaysRows: alwaysRows, expandedRows: isExpanded ? expandedRows : [])
@@ -140,7 +145,8 @@ struct WidgetGroupedListView: View {
             expandedRows: expandedRows,
             hasExpandedMetrics: group.hasExpandedMetrics,
             isExpanded: isExpanded,
-            links: group.provider.visibleLinks
+            links: group.provider.visibleLinks,
+            accounts: group.accounts
         )
         // Same card builder the lifted preview uses, so the floating chip can't drift from the live card.
         return DashboardMetricCard {
@@ -150,10 +156,12 @@ struct WidgetGroupedListView: View {
             ForEach(cardRows) { cardRow in
                 switch cardRow {
                 case .metric(let entry):
-                    row(entry.descriptor, data: entry.data, in: providerID,
+                    row(entry.descriptor, data: entry.data, in: group,
                         condensedTop: condensedIDs.contains(entry.descriptor.id))
                 case .links(let links):
                     ProviderLinksView(links: links)
+                case .legend(let accounts):
+                    AccountLegendView(accounts: accounts)
                 case .separator:
                     DashboardMetricCardSeparator()
                         .reorderFrame(
@@ -167,10 +175,16 @@ struct WidgetGroupedListView: View {
         }
     }
 
-    private func resolvedRows(_ widgets: [PlacedWidget]) -> [ResolvedRow] {
+    private func resolvedRows(_ widgets: [PlacedWidget], in group: ProviderGroup) -> [ResolvedRow] {
         widgets.compactMap { widget -> ResolvedRow? in
             guard let descriptor = layout.descriptor(for: widget) else { return nil }
-            return ResolvedRow(widget: widget, descriptor: descriptor, data: dataStore.data(for: descriptor))
+            return ResolvedRow(widget: widget, descriptor: descriptor, data: dataStore.data(for: descriptor, in: group))
+        }
+    }
+
+    private func refresh(_ group: ProviderGroup) {
+        Task {
+            for id in group.memberIDs { await dataStore.refreshOnUserRequest(providerID: id) }
         }
     }
 
@@ -179,20 +193,24 @@ struct WidgetGroupedListView: View {
         expandedRows: [ResolvedRow],
         hasExpandedMetrics: Bool,
         isExpanded: Bool,
-        links: [ProviderLink]
+        links: [ProviderLink],
+        accounts: [MergedAccount]
     ) -> [DashboardMetricCardRow] {
         // #596: provider quick-link buttons live INSIDE the collapsible expanded section, pinned at its
         // bottom, so collapsing the caret hides them along with the expanded metrics — they're part of
         // the expander, not always-visible chrome. The caret shows for any provider with expanded
         // content (metrics OR links), so a links-only provider still gets a caret to reveal its buttons.
+        // A merged card's legend follows its last visible metric row.
         let hasLinks = !links.isEmpty
         let hasExpandedContent = hasExpandedMetrics || hasLinks
+        let legend: [DashboardMetricCardRow] = accounts.isEmpty ? [] : [.legend(accounts)]
         let always = alwaysRows.map(DashboardMetricCardRow.metric)
-        guard hasExpandedContent else { return always }
-        guard isExpanded else { return always + [.toggle] }
+        guard hasExpandedContent else { return always + legend }
+        guard isExpanded else { return always + legend + [.toggle] }
         return always
             + [.separator]
             + expandedRows.map(DashboardMetricCardRow.metric)
+            + legend
             + (hasLinks ? [.links(links)] : [])
             + [.toggle]
     }
@@ -226,7 +244,7 @@ struct WidgetGroupedListView: View {
         return Set(offsets.map { rows[$0].descriptor.id })
     }
 
-    private func row(_ descriptor: WidgetDescriptor, data: WidgetData, in providerID: String,
+    private func row(_ descriptor: WidgetDescriptor, data: WidgetData, in group: ProviderGroup,
                      condensedTop: Bool) -> some View {
         return WidgetRowView(
             data: data,
@@ -234,11 +252,11 @@ struct WidgetGroupedListView: View {
             onToggleMeterStyle: { dataStore.meterStyle.toggle() },
             condensedTop: condensedTop
         )
-            .environment(\.resetClaim, resetClaims[providerID])
+            .environment(\.resetClaim, group.resetClaimProviderID.flatMap { resetClaims[$0] })
             .contentShape(Rectangle())
             .opacity(activeMetricID == descriptor.id ? 0 : 1)
-            .highPriorityGesture(metricDragGesture(for: descriptor, providerID: providerID))
-            .contextMenu { rowMenu(descriptor, providerID: providerID) }
+            .highPriorityGesture(metricDragGesture(for: descriptor, in: group))
+            .contextMenu { rowMenu(descriptor, in: group) }
             .reorderFrame(id: descriptor.id, in: .named(reorderSpaceName))
     }
 
@@ -246,7 +264,8 @@ struct WidgetGroupedListView: View {
     /// into Customize — without a trip through Customize first. Hide leads (the most-reached-for verb), then
     /// star, then a divider before the two provider-/app-level actions.
     @ViewBuilder
-    private func rowMenu(_ descriptor: WidgetDescriptor, providerID: String) -> some View {
+    private func rowMenu(_ descriptor: WidgetDescriptor, in group: ProviderGroup) -> some View {
+        let providerID = group.provider.id
         Button("Hide") {
             layout.setMetricEnabled(descriptor.id, false)
         }
@@ -262,11 +281,7 @@ struct WidgetGroupedListView: View {
             }
         }
         Divider()
-        if let provider = layout.provider(id: providerID) {
-            Button("Refresh \(provider.displayName)") {
-                Task { await dataStore.refreshOnUserRequest(providerID: providerID) }
-            }
-        }
+        Button("Refresh \(group.provider.displayName)") { refresh(group) }
         Button("Customize…") {
             openCustomize(for: providerID)
         }
@@ -293,14 +308,15 @@ struct WidgetGroupedListView: View {
         )
     }
 
-    private func metricDragGesture(for descriptor: WidgetDescriptor, providerID: String) -> some Gesture {
-        reorderDragGesture(
+    private func metricDragGesture(for descriptor: WidgetDescriptor, in group: ProviderGroup) -> some Gesture {
+        let providerID = group.provider.id
+        return reorderDragGesture(
             id: descriptor.id,
             coordinateSpaceName: reorderSpaceName,
             frameStore: frameStore,
             active: $activeMetricID,
             lift: $reorderLift,
-            makeLift: { makeMetricLift(for: descriptor, value: $0) },
+            makeLift: { makeMetricLift(for: descriptor, in: group, value: $0) },
             orderedIDs: { metricTargetIDs(for: providerID) },
             reorder: { target in
                 let current = metricTargetIDs(for: providerID)
@@ -338,12 +354,12 @@ struct WidgetGroupedListView: View {
         let isExpanded = layout.isProviderExpanded(group.provider.id)
         let alwaysRows = group.alwaysShownWidgets.compactMap { widget -> WidgetData? in
             guard let descriptor = layout.descriptor(for: widget) else { return nil }
-            return dataStore.data(for: descriptor)
+            return dataStore.data(for: descriptor, in: group)
         }
         let expandedRows = isExpanded
             ? group.expandedWidgets.compactMap { widget -> WidgetData? in
                 guard let descriptor = layout.descriptor(for: widget) else { return nil }
-                return dataStore.data(for: descriptor)
+                return dataStore.data(for: descriptor, in: group)
             }
             : []
         let links = group.provider.visibleLinks
@@ -352,7 +368,7 @@ struct WidgetGroupedListView: View {
             id: group.provider.id,
             payload: .dashboardProvider(
                 provider: group.provider,
-                plan: dataStore.plan(for: group.provider.id),
+                plan: group.memberIDs.lazy.compactMap { dataStore.plan(for: $0) }.first,
                 rows: alwaysRows + expandedRows,
                 dividerIndex: isExpanded && hasExpandedContent ? alwaysRows.count : nil,
                 links: links,
@@ -364,10 +380,11 @@ struct WidgetGroupedListView: View {
         )
     }
 
-    private func makeMetricLift(for descriptor: WidgetDescriptor, value: DragGesture.Value) -> ReorderLift? {
+    private func makeMetricLift(for descriptor: WidgetDescriptor, in group: ProviderGroup,
+                                value: DragGesture.Value) -> ReorderLift? {
         ReorderLift.make(
             id: descriptor.id,
-            payload: .dashboardMetric(data: dataStore.data(for: descriptor)),
+            payload: .dashboardMetric(data: dataStore.data(for: descriptor, in: group)),
             value: value,
             frames: frameStore.frames
         )

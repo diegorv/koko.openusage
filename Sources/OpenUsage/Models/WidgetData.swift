@@ -18,7 +18,7 @@ struct WidgetData: Hashable {
     let title: String          // "Claude 5h", "Cursor credits"
     let icon: IconSource
     let kind: MetricKind
-    let used: Double
+    var used: Double
     var limit: Double?         // nil => unbounded (number tile); cleared when a .values line resolves
     var countSuffix: String?   // e.g. "credits", "requests"
     /// ISO 4217 code of a `.dollars` meter (`nil` = USD); `.values` rows read each value's own code.
@@ -106,6 +106,8 @@ struct WidgetData: Hashable {
     var isChart: Bool = false
     var chartPoints: [MetricChartPoint] = []
     var chartNote: String?
+    /// One tick per account on a merged card's bar (see `WidgetData.merging`). Empty on a normal row.
+    var accountTicks: [AccountTick] = []
 
     var isBounded: Bool { limit != nil }
 

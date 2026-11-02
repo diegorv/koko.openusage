@@ -14,6 +14,14 @@ Star a metric from any row's right-click menu, or from the always-visible star b
 - At most **2 stars per provider**.
 - When a star isn't allowed, the star button stays clickable — clicking it shakes and shows the reason in a temporary pill over the bottom of Customize (for example, "Up to 2 stars per provider").
 
+## Several accounts of one provider
+
+When two or more accounts of one provider are on (for example two Claude logins), the menu bar shows one item for that provider instead of one per account, just like the dashboard's merged card (see [Dashboard § Several accounts of one provider](dashboard.md#several-accounts-of-one-provider)).
+
+- Each starred value is the merged one: the average of the accounts' percentages, or the sum for money and counts.
+- The stars come from the plain **Claude** or **Codex** entry in Customize. Stars on the other accounts are kept but don't add items while the accounts are merged.
+- With only one account on, the item looks just as before and uses that account's own stars.
+
 ## Styles
 
 Settings → Appearance → Icon Style:

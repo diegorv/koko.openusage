@@ -28,12 +28,17 @@ struct ProviderMetrics: Identifiable {
     let provider: Provider
     let alwaysShownMetrics: [WidgetDescriptor]
     let expandedMetrics: [WidgetDescriptor]
+    /// The accounts folded into this menu-bar item when its family is merged (see `ProviderGroup.accounts`).
+    /// Empty for a normal provider.
+    var accounts: [MergedAccount] = []
     var id: String { provider.id }
 
-    init(provider: Provider, alwaysShownMetrics: [WidgetDescriptor], expandedMetrics: [WidgetDescriptor]) {
+    init(provider: Provider, alwaysShownMetrics: [WidgetDescriptor], expandedMetrics: [WidgetDescriptor],
+         accounts: [MergedAccount] = []) {
         self.provider = provider
         self.alwaysShownMetrics = alwaysShownMetrics
         self.expandedMetrics = expandedMetrics
+        self.accounts = accounts
     }
 
     /// Convenience for callers that don't partition (e.g. tests): everything is always-shown.

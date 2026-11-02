@@ -1,18 +1,32 @@
 import Foundation
 
 /// Shared display formatters for live usage data: the mode-aware deadline/reset phrasing
-/// (`deadlineLabel`, `resetRelativeLabel`, `resetAbsoluteLabel`), compact durations, and USD currency.
+/// (`deadlineLabel`, `resetRelativeLabel`, `resetAbsoluteLabel`), compact durations, and currency.
 enum Formatters {
-    static func currency(_ amount: Double, fractionDigits: Int = 2) -> String {
-        let f = NumberFormatter()
-        f.numberStyle = .currency
-        f.currencyCode = "USD"
-        f.locale = Locale(identifier: "en_US")
+    /// `currencyCode` is ISO 4217; `nil` means USD. Always en_US so the symbol sits before the number
+    /// ("$20.00", "R$20.00") regardless of the system locale.
+    static func currency(_ amount: Double, fractionDigits: Int = 2, currencyCode: String? = nil) -> String {
+        let f = currencyFormatter(currencyCode)
         f.maximumFractionDigits = fractionDigits
         f.minimumFractionDigits = fractionDigits
         // The fallback must also respect the requested precision: a raw "$\(amount)" would leak the
         // double's full decimals (e.g. "$180.168"), which is exactly the rounding glitch we're fixing.
-        return f.string(from: amount as NSNumber) ?? "$\(String(format: "%.\(fractionDigits)f", amount))"
+        return f.string(from: amount as NSNumber)
+            ?? "\(currencySymbol(currencyCode))\(String(format: "%.\(fractionDigits)f", amount))"
+    }
+
+    /// The en_US symbol for a currency code: "$" for USD (and `nil`), "R$" for BRL, "€" for EUR. A code
+    /// the system doesn't know prints as the code itself.
+    static func currencySymbol(_ currencyCode: String?) -> String {
+        currencyFormatter(currencyCode).currencySymbol ?? currencyCode ?? "$"
+    }
+
+    private static func currencyFormatter(_ currencyCode: String?) -> NumberFormatter {
+        let f = NumberFormatter()
+        f.numberStyle = .currency
+        f.currencyCode = currencyCode ?? "USD"
+        f.locale = Locale(identifier: "en_US")
+        return f
     }
 
     /// The app's compact month/day, e.g. "Jun 21" — localized, no year. Shared so every short calendar

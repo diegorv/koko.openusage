@@ -13,7 +13,7 @@ the same account and organization through both Claude Code and Claude Desktop st
 | Weekly | 7-day window usage |
 | Fable | Separate weekly Fable limit (model-scoped window from the `limits` array) |
 | Sonnet | Separate weekly Sonnet limit (plan-dependent) |
-| Extra Usage | Extra-usage credits spent against your monthly cap |
+| Extra Usage | Extra-usage credits spent against your monthly cap, in your account's currency (e.g. `R$20.00` for a BRL account; USD when Claude doesn't say) |
 | Rate Limit Resets | One-off usage-limit resets Anthropic grants (e.g. a model-launch reset for Pro and Max), shown as a count (e.g. `1 available`); hover the value for a timeline of when each must be used by |
 | Today / Yesterday / Last 30 Days | Local spend, as cost, tokens, or both (see below) |
 

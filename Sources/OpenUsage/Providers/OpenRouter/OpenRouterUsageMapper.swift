@@ -21,7 +21,7 @@ enum OpenRouterUsageMapper {
         // Credits meter: spend against the credits purchased. Only a positive ceiling makes a meter
         // meaningful (a free/never-topped-up account reports 0 here) — those accounts still get Balance.
         if totalCredits > 0 {
-            lines.append(.progress(label: "Credits", used: used, limit: totalCredits, format: .dollars))
+            lines.append(.progress(label: "Credits", used: used, limit: totalCredits, format: .dollars()))
         }
         // Balance: prepaid credits remaining. A real zero is shown ("$0.00 left"), never "No data".
         lines.append(.values(
@@ -49,7 +49,7 @@ enum OpenRouterUsageMapper {
                 label: "Key Limit",
                 used: max(0, limit - remaining),
                 limit: limit,
-                format: .dollars
+                format: .dollars()
             ))
         }
 

@@ -126,7 +126,7 @@ enum OllamaUsageMapper {
             label: "Monthly",
             used: min(allowance, max(0, allowance - balance)),
             limit: allowance,
-            format: .dollars,
+            format: .dollars(),
             resetsAt: until,
             periodDurationMs: periodMs
         )

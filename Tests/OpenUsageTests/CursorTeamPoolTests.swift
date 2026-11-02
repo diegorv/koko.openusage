@@ -52,7 +52,7 @@ final class CursorTeamPoolTests: XCTestCase {
         }
         XCTAssertEqual(used, 2345)
         XCTAssertEqual(limit, 5000)
-        XCTAssertEqual(format, .dollars)
+        XCTAssertEqual(format, .dollars())
     }
 
     func testIncompleteOrMalformedPoolsKeepLegacyFallback() throws {
@@ -68,7 +68,7 @@ final class CursorTeamPoolTests: XCTestCase {
                 mapped.lines.first(where: { $0.label == "Total usage" }) else {
                 return XCTFail("Missing legacy total")
             }
-            XCTAssertEqual(format, .dollars)
+            XCTAssertEqual(format, .dollars())
         }
     }
 

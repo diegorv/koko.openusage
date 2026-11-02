@@ -8,7 +8,7 @@ import Foundation
 /// `ValueSelection`. That's what lets one row back a cost-only tile, a tokens-only tile, and a
 /// combined tile without the mapper emitting the data three times.
 struct MetricValue: Hashable, Sendable, Codable {
-    /// The raw magnitude: USD for `.dollars`, 0...100 for `.percent`, an absolute count otherwise.
+    /// The raw magnitude: an amount in `currency` for `.dollars`, 0...100 for `.percent`, an absolute count otherwise.
     var number: Double
     /// How this number prints ($ / % / plain count). Distinct per value within a row, which is what
     /// lets a widget pick "the dollars one" or "the count one" by kind.
@@ -19,12 +19,15 @@ struct MetricValue: Hashable, Sendable, Codable {
     /// True when the number is imputed locally rather than measured or billed — it drives the ⓘ note.
     /// Per value because a spend row's dollars are an estimate while its token count is real.
     var estimated: Bool
+    /// ISO 4217 code of a `.dollars` amount; `nil` means USD (and is what older snapshots decode to).
+    var currency: String?
 
-    init(number: Double, kind: MetricKind, label: String? = nil, estimated: Bool = false) {
+    init(number: Double, kind: MetricKind, label: String? = nil, estimated: Bool = false, currency: String? = nil) {
         self.number = number
         self.kind = kind
         self.label = label
         self.estimated = estimated
+        self.currency = currency
     }
 }
 

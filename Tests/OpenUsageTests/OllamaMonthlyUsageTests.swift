@@ -20,7 +20,7 @@ final class OllamaMonthlyUsageTests: XCTestCase {
 
         XCTAssertEqual(mapped.plan, .named("Pro"))
         XCTAssertEqual(mapped.lines, [
-            .progress(label: "Monthly", used: 27.5, limit: 100, format: .dollars,
+            .progress(label: "Monthly", used: 27.5, limit: 100, format: .dollars(),
                       resetsAt: OpenUsageISO8601.date(from: "2026-10-15T09:30:00Z"),
                       periodDurationMs: 30 * 24 * 60 * 60 * 1000),
             .values(label: "Purchased Credits", values: [MetricValue(number: 25, kind: .dollars)])
@@ -41,8 +41,8 @@ final class OllamaMonthlyUsageTests: XCTestCase {
         let unused = try OllamaUsageMapper.balanceLines(Data(#"{"included":{"balance_usd":60,"allowance_usd":60}}"#.utf8))
         let overspent = try OllamaUsageMapper.balanceLines(Data(#"{"included":{"balance_usd":-5,"allowance_usd":60}}"#.utf8))
 
-        XCTAssertEqual(unused, [.progress(label: "Monthly", used: 0, limit: 60, format: .dollars)])
-        XCTAssertEqual(overspent, [.progress(label: "Monthly", used: 60, limit: 60, format: .dollars)])
+        XCTAssertEqual(unused, [.progress(label: "Monthly", used: 0, limit: 60, format: .dollars())])
+        XCTAssertEqual(overspent, [.progress(label: "Monthly", used: 60, limit: 60, format: .dollars())])
     }
 
     func testMissingOrUnusableAllowanceDoesNotInventAMeter() throws {

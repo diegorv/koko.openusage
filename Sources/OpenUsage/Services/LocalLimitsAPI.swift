@@ -82,7 +82,7 @@ enum LocalLimitsAPI {
 
     private struct WireResource: Encodable {
         let kind: LimitResourceDescriptor.Kind
-        let unit: String
+        var unit: String
         var used: Double?
         var available: Double?
         var limit: Double?
@@ -118,6 +118,9 @@ enum LocalLimitsAPI {
                 guard let metric = values.first(where: { value in
                     value.kind == expectedKind && (expectedLabel == nil || value.label == expectedLabel)
                 }) else { return nil }
+                if metric.kind == .dollars, let currency = metric.currency {
+                    unit = currency.lowercased()
+                }
                 if resource.kind == .balance {
                     available = metric.number
                 } else {
@@ -131,16 +134,17 @@ enum LocalLimitsAPI {
             }
         }
 
-        /// A descriptor names the stable resource and supplies a fallback unit for value rows. Progress
-        /// rows carry their actual runtime unit, which can vary by plan (for example Cursor Total Usage
-        /// is percent on individual plans and requests on request-based Enterprise plans).
+        /// A descriptor names the stable resource and supplies a fallback unit for value rows (a money
+        /// value carrying its own currency reports that instead). Progress rows carry their actual
+        /// runtime unit, which can vary by plan (for example Cursor Total Usage is percent on
+        /// individual plans and requests on request-based Enterprise plans).
         private static func progressUnit(_ line: MetricLine) -> String? {
             guard case .progress(_, _, _, let format, _, _, _) = line else { return nil }
             switch format {
             case .percent:
                 return "percent"
-            case .dollars:
-                return "usd"
+            case .dollars(let currency):
+                return currency?.lowercased() ?? "usd"
             case .count(let suffix):
                 return suffix.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
             }

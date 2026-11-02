@@ -364,7 +364,7 @@ final class WidgetDataStoreTests: XCTestCase {
                 providerID: provider.id,
                 displayName: provider.displayName,
                 lines: [
-                    .progress(label: "Budget", used: 12.48, limit: 20, format: .dollars),
+                    .progress(label: "Budget", used: 12.48, limit: 20, format: .dollars()),
                     .progress(label: "Requests", used: 412, limit: 500, format: .count(suffix: "requests"))
                 ]
             )

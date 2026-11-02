@@ -4,13 +4,15 @@
 
 **Blocked by:** none
 
-**Status:** ready-for-agent
+**Status:** resolved
 
-- [ ] Money values (progress and plain values) can carry an optional currency code; a missing code means USD, and snapshots persisted before this change still decode as USD.
-- [ ] Claude's "Extra usage spent" line uses `extra_usage.currency` (and `decimal_places` for the minor-unit conversion when present); an absent or empty currency stays USD.
-- [ ] `MetricFormatter` formats money in its currency (BRL shows as R$, USD as $), in the dashboard, the menu bar and the compact forms.
-- [ ] The CLI JSON for Claude `extraUsage` reports the real currency as its `unit` (lowercase ISO code, such as `"brl"`); other providers still report `"usd"`.
-- [ ] Tests (test-first) cover a BRL payload, a USD payload, a payload without `currency`, and decoding an old snapshot without a currency.
-- [ ] Docs in `docs/` that describe money or the CLI's `unit` field are updated.
+- [x] Money values (progress and plain values) can carry an optional currency code; a missing code means USD, and snapshots persisted before this change still decode as USD.
+- [x] Claude's "Extra usage spent" line uses `extra_usage.currency` (and `decimal_places` for the minor-unit conversion when present); an absent or empty currency stays USD.
+- [x] `MetricFormatter` formats money in its currency (BRL shows as R$, USD as $), in the dashboard, the menu bar and the compact forms.
+- [x] The CLI JSON for Claude `extraUsage` reports the real currency as its `unit` (lowercase ISO code, such as `"brl"`); other providers still report `"usd"`.
+- [x] Tests (test-first) cover a BRL payload, a USD payload, a payload without `currency`, and decoding an old snapshot without a currency.
+- [x] Docs in `docs/` that describe money or the CLI's `unit` field are updated.
 
 ## Comments
+
+- 2026-11-01, branch `issue/01-money-values-carry-currency`: money values carry an optional currency (missing = USD, old snapshots decode as USD); Claude extra usage uses `extra_usage.currency`/`decimal_places`; `MetricFormatter` shows R$ for BRL; CLI `unit` reports the real currency; docs updated. Fix round: tidied docs and comments (e0b0e6d9). Tests: `swift build` exit 0; full `swift test` exit=0 (1771 + 4 tests, 0 failures). Reviews: round 1 APPROVED, round 2 APPROVED.

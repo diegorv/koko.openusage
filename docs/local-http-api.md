@@ -101,7 +101,9 @@ the app and CLI; `stale` says whether that instant has passed. Refresh failures 
 `{"providerId":"…","message":"…"}` while a last-good provider snapshot remains available.
 For bounded progress resources, `unit` follows the provider's live metric format. For example, Cursor
 `totalUsage` is `percent` on percentage-based plans, `requests` on request-based Enterprise plans, and
-`usd` when Cursor reports a dollar pool. Copilot `premiumCredits` is `percent` on paid plans and a
+`usd` when Cursor reports a dollar pool. Money resources report their currency as a lowercase ISO 4217
+code: Claude `extraUsage` uses the account's billing currency (for example `brl`); money with no
+reported currency is `usd`. Copilot `premiumCredits` is `percent` on paid plans and a
 `credits` count on org-managed seats that only report personal `credits_used`. OpenCode `session`,
 `weekly`, and `monthly` are `percent`. An untouched OpenCode `session` omits `resetsAt`; the field appears
 with the anchored reset instant after the first model call starts the rolling window, even while `used`
@@ -141,7 +143,7 @@ it. It is omitted when unavailable, including on older endpoints and accounts wi
       "label": "Session",
       "used": 42.0,
       "limit": 100.0,
-      "format": { "kind": "percent" },          // or "dollars", or "count" (+ "suffix")
+      "format": { "kind": "percent" },          // or "dollars" (+ "currency" when the provider reports one; absent means USD), or "count" (+ "suffix")
       "resetsAt": "2026-03-26T13:00:00.161Z",   // optional
       "periodDurationMs": 18000000,             // optional
       "color": null

@@ -30,11 +30,12 @@ of the number, not by the provider:
 
 - **`.progress`** — a bounded meter with `used`, `limit`, and a `format`:
   - `.percent` for quota-style limits (session, weekly),
-  - `.dollars` for a capped dollar amount (credits with a ceiling),
+  - `.dollars()` for a capped money amount (credits with a ceiling); pass `currency:` (an ISO 4217
+    code such as `"BRL"`) when the provider bills in another currency — leaving it out means USD,
   - `.count(suffix:)` for a capped count (e.g. requests per cycle).
   - Add `resetsAt` when the window resets at a known time, and `periodDurationMs` for the cycle length.
 - **`.values`** — an unbounded row carrying one or more raw numbers (each a `MetricValue`: a number, its
-  kind, an optional unit label like `"tokens"`). Use it for any limitless numeric row — a spend day carries
+  kind, an optional unit label like `"tokens"`, and for money an optional `currency`, USD when absent). Use it for any limitless numeric row — a spend day carries
   dollars *and* tokens, Codex credits carry dollars *and* a count. The widget picks which to show
   (cost-only, tokens-only, or both) via its descriptor, and formatting happens at the display edge, so the
   menu bar never re-parses a string. Prefer this for numbers.

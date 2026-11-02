@@ -48,7 +48,7 @@ final class CursorUsageSummaryMapperTests: XCTestCase {
         let onDemand = try XCTUnwrap(progress(mapped.lines, "On-demand"))
         XCTAssertEqual(onDemand.used, 0)
         XCTAssertEqual(onDemand.limit, 250)
-        XCTAssertEqual(onDemand.format, .dollars)
+        XCTAssertEqual(onDemand.format, .dollars())
     }
 
     func testFallsBackToPooledTotalAndTeamOnDemandWhenIndividualBucketsAreMissing() throws {
@@ -143,7 +143,7 @@ final class CursorUsageSummaryMapperTests: XCTestCase {
 
     func testAppendMissingOnDemandDoesNotReplaceExistingOnDemand() {
         var lines: [MetricLine] = [
-            .progress(label: "On-demand", used: 1, limit: 10, format: .dollars)
+            .progress(label: "On-demand", used: 1, limit: 10, format: .dollars())
         ]
         CursorUsageSummaryMapper.appendMissingOnDemand(
             from: [

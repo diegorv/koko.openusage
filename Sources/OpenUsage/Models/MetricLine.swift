@@ -5,7 +5,9 @@ import Foundation
 /// This mirrors the old JavaScript plugin contract while keeping rendering decisions in Swift.
 enum ProgressFormat: Hashable, Sendable, Codable {
     case percent
-    case dollars
+    /// A money amount. `currency` is an ISO 4217 code; `nil` means USD, so every provider that only
+    /// bills in dollars (and every snapshot persisted before the code existed) reads as USD.
+    case dollars(currency: String? = nil)
     case count(suffix: String)
 
     var metricKind: MetricKind {
@@ -24,9 +26,16 @@ enum ProgressFormat: Hashable, Sendable, Codable {
         return nil
     }
 
+    /// The money currency code, `nil` for USD and for non-money formats.
+    var currency: String? {
+        if case .dollars(let currency) = self { return currency }
+        return nil
+    }
+
     private enum CodingKeys: String, CodingKey {
         case kind
         case suffix
+        case currency
     }
 
     private enum Kind: String, Codable {
@@ -41,7 +50,7 @@ enum ProgressFormat: Hashable, Sendable, Codable {
         case .percent:
             self = .percent
         case .dollars:
-            self = .dollars
+            self = .dollars(currency: try container.decodeIfPresent(String.self, forKey: .currency))
         case .count:
             self = .count(suffix: try container.decode(String.self, forKey: .suffix))
         }
@@ -52,8 +61,9 @@ enum ProgressFormat: Hashable, Sendable, Codable {
         switch self {
         case .percent:
             try container.encode(Kind.percent, forKey: .kind)
-        case .dollars:
+        case .dollars(let currency):
             try container.encode(Kind.dollars, forKey: .kind)
+            try container.encodeIfPresent(currency, forKey: .currency)
         case .count(let suffix):
             try container.encode(Kind.count, forKey: .kind)
             try container.encode(suffix, forKey: .suffix)

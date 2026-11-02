@@ -661,6 +661,7 @@ final class WidgetDataStore {
                 used: normalizedUsed,
                 limit: limit,
                 countSuffix: format.countSuffix,
+                currency: format.currency,
                 valuePrefix: descriptor.sample.valuePrefix,
                 resetsAt: resetsAt,
                 periodDurationMs: periodDurationMs,

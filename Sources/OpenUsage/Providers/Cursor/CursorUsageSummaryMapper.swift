@@ -229,7 +229,7 @@ enum CursorUsageSummaryMapper {
             label: label,
             used: ProviderParse.centsToDollars(meter.used),
             limit: ProviderParse.centsToDollars(meter.limit),
-            format: .dollars,
+            format: .dollars(),
             resetsAt: cycle.resetsAt,
             periodDurationMs: cycle.periodDurationMs
         ))

@@ -216,18 +216,29 @@ enum ClaudeUsageMapper {
             return
         }
 
-        let used = ProviderParse.centsToDollars(usedCents)
+        // Credits are in the account currency's minor units (`decimal_places`, cents by default), and
+        // the currency is the account's own (e.g. "BRL"), not always USD. Absent or blank means USD.
+        let currency = (object["currency"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines).uppercased().nilIfEmpty
+        let decimalPlaces = ProviderParse.number(object["decimal_places"]).flatMap { (0...4).contains($0) ? $0 : nil } ?? 2
+        // Snap to a whole minor unit, then scale.
+        let toMajor = { (minor: Double) in minor.rounded() / pow(10, decimalPlaces.rounded()) }
+
+        let used = toMajor(usedCents)
         if let limitCents = ProviderParse.number(object["monthly_limit"]), limitCents > 0 {
             lines.append(.progress(
                 label: "Extra usage spent",
                 used: used,
-                limit: ProviderParse.centsToDollars(limitCents),
-                format: .dollars
+                limit: toMajor(limitCents),
+                format: .dollars(currency: currency)
             ))
         } else if used > 0 {
             // No monthly cap: an unbounded spend, carried raw so it formats through `MetricFormatter`
             // (compact like the spend tiles, e.g. "$1.2K spent") instead of a baked full-currency string.
-            lines.append(.values(label: "Extra usage spent", values: [MetricValue(number: used, kind: .dollars)]))
+            lines.append(.values(
+                label: "Extra usage spent",
+                values: [MetricValue(number: used, kind: .dollars, currency: currency)]
+            ))
         }
     }
 

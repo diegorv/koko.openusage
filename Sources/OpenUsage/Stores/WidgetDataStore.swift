@@ -592,6 +592,9 @@ final class WidgetDataStore {
         return "Refresh failed"
     }
 
+    /// A registered descriptor by id; a merged card finds each account's own metric with it.
+    func descriptor(id: String) -> WidgetDescriptor? { registry.descriptor(id: id) }
+
     func data(for descriptor: WidgetDescriptor) -> WidgetData {
         var result: WidgetData
         if let snapshot = snapshots[descriptor.providerID],

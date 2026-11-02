@@ -16,11 +16,24 @@ Each provider card leads with its **Always Visible** metrics. When a card is col
 
 When you expand a card, the tucked-away metrics open below the line as a single-column list, so each detail row keeps the full card width.
 
+## Several accounts of one provider
+
+When two or more Claude accounts are on (local logins, Claude Swap, or CLIProxyAPI hub accounts alike), they share one **Claude** card instead of one card each. The same goes for Codex.
+
+- A bar shows the average of the accounts' percentages, in the usual pace color. A thin colored tick per account marks where that account sits on its own.
+- A small key under the rows names each account next to its tick color. When two accounts share a name (two accounts in one organization, one email on two hubs), the key adds the email name or hub label in parentheses.
+- Money and count rows (Today, Last 30 Days, credits) show the sum across the accounts. The reset is the soonest one.
+- An account that doesn't report a metric is left out of that row's average and gets no tick.
+- The Rate Limit Resets popover lists every account's resets but has no **Use** button, since one click can't tell which account to spend. To use a reset, turn the other accounts off so that account has its own card again.
+- With only one account on, the card looks just like a normal card: no ticks and no key.
+
+The merged card uses the first account's metric settings (the plain **Claude** or **Codex** entry in Customize): which metrics show, their order, and Always Visible / On Demand. Turning an account off in Customize removes it from the merged card. Hiding or refreshing the card from its header acts on every account in it.
+
 A provider card can also show **quick-link buttons** pinned at the bottom of its expanded section — Status, Console, Dashboard, and the like — that open the provider's own pages in your default browser. They're part of the expander, so collapsing the caret hides them along with the tucked-away metrics. The caret sits below the links. Buttons lay out up to three across, wrapping to a second row when there are more.
 
 ## Total Spend
 
-When any enabled provider tracks daily spend (Claude, Codex, Cursor, Grok, or OpenCode), a card sits above the provider sections. The title is a pull-down menu for **Cost**, **Cost/MTok**, or **Tokens** (Cost is the default; the choice sticks across restarts). A capsule switcher flips the period between **Today**, **Yesterday**, and **30 Days**. The ring, center total, and ranked legend follow the selected metric:
+When any enabled provider tracks daily spend (Claude, Codex, Cursor, Grok, or OpenCode), a card sits below the provider sections. The title is a pull-down menu for **Cost**, **Cost/MTok**, or **Tokens** (Cost is the default; the choice sticks across restarts). A capsule switcher flips the period between **Today**, **Yesterday**, and **30 Days**. The ring, center total, and ranked legend follow the selected metric:
 
 - **Cost** — each segment is that provider's share of combined dollars (biggest spender first).
 - **Cost/MTok** — each segment is sized by that provider's dollars-per-million-tokens rate; the center is the blended rate across providers that have both spend and tokens; the legend lists each provider's own rate.
@@ -41,7 +54,7 @@ The ring center is always two short lines — a compact number on top and a quie
 - Once the balance is spent — actually empty, or so close it rounds to `0` (like `0% left` or `$0.00`) — the bar stays red and the flame reads `Limit reached`, no matter how gentle the burn rate looked. A visibly empty bar never shows a calmer color.
 - **Hover the bar**, the spare note, or the flame for the pace projection at reset — the one number not already on the row: a blue bar shows the cushion you're on course to finish with (`~35% left at reset`), a yellow bar the usage it complements the spare note with (`~92% used at reset`), a red bar how far past the limit you're projected to land (`~12% over limit at reset`, or `~100% used at reset` when you're projected to finish right at it). Once spent it reads `Limit reached`.
 
-**Metrics without a limit** (daily spend, balances) show as a single line like `$4.08 spent` or `1.2M tokens`. The Today / Yesterday / Last 30 Days rows combine cost and tokens (`$4.08 · 1.2M tokens`) and can be turned on or off in Customize. A day with no usage reads "No data" rather than a misleading `$0.00 · 0 tokens` — the same as when the source can't be loaded at all. Big numbers are abbreviated to keep rows tidy (`$2.06K`, `1.5B`) — hover the value to see the exact figures and source note, such as a local estimate.
+**Metrics without a limit** (daily spend, balances) show as a single line like `$4.08 spent` or `1.2M tokens`. The Today / Yesterday / Last 30 Days rows combine cost and tokens (`$4.08 · 1.2M tokens`) and can be turned on or off in Customize. A day with no usage reads "No data" rather than a misleading `$0.00 · 0 tokens` — the same as when the source can't be loaded at all. A few rows hide instead of reading "No data" while the provider doesn't report them (Claude's Session, see [Claude](providers/claude.md)). Big numbers are abbreviated to keep rows tidy (`$2.06K`, `1.5B`) — hover the value to see the exact figures and source note, such as a local estimate.
 
 For Claude, Codex, Cursor, Grok, and OpenCode spend rows, the value gently highlights when you point at it, signaling it's interactive; hovering it for a moment opens a small model breakdown for that period: a ranked list of models, each showing its name and spend on one line, its share percentage and tokens on the next, and a thin share bar. Cursor groups its per-thinking-effort model names (like `claude-opus-4-8-thinking-max`) under the base model. Long tails fold into **Other** — anything past the top named models or under 5% of the period. Models no pricing source can price don't appear here (or in the row's totals) at all; the row's warning triangle names them instead (see [Pricing](pricing.md)).
 

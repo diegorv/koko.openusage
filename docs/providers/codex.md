@@ -37,7 +37,9 @@ The Keychain fallback selects the Codex CLI item for `$CODEX_HOME` (or `~/.codex
 ### Codex Swap accounts
 
 OpenUsage shows accounts saved by [Codex Swap (`xswap`)](https://github.com/maddada/codex-swap).
-Each account and workspace gets its own card, labeled with its alias and email. Cards and pins stay
+Each account and workspace gets its own entry in Customize, labeled with its alias and email. On the
+dashboard, two or more accounts share one Codex card (see
+[Several accounts of one provider](../dashboard.md#several-accounts-of-one-provider)). Settings and pins stay
 with the same account when you switch the default login. Restart OpenUsage after adding, removing,
 or renaming an account. Custom locations set with `XSWAP_HOME` or `XDG_DATA_HOME` are supported.
 Upgrading from a version without Swap support refreshes saved shell settings before account discovery.
@@ -55,8 +57,8 @@ Upgrading from a version without Swap support refreshes saved shell settings bef
 OpenUsage also finds signed-in accounts in `CODEX_HOME`, `~/.codex`, `~/.config/codex`, sibling
 `~/.codex-*` folders, sibling `~/.config/codex-*` folders, and pi's `auth.json` (`openai-codex`,
 `openai-codex-2`, …). Logins are matched by ChatGPT workspace and email, so two users in the same
-workspace remain separate cards, and the same account signed in through several homes and pi shares
-one card, named by its xswap alias, then its pi label, then its workspace and email. A login held only
+workspace remain separate accounts, and the same account signed in through several homes and pi counts
+as one account, named by its xswap alias, then its pi label, then its workspace and email. A login held only
 in the Keychain counts as an account too. A single account keeps the plain Codex card, which still
 uses a login found only in a sibling home or in pi, and counts that home's session logs in its
 spend tiles. Restart OpenUsage after adding or removing a login.

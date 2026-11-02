@@ -52,25 +52,71 @@ extension LayoutStore {
     /// Enabled (and provider-enabled) widgets grouped by provider, in the user's provider order, each
     /// provider's metrics kept in the provider's custom metric order. Drives the grouped dashboard list; providers with
     /// no visible metric are dropped so the dashboard only shows groups that have something to show.
+    ///
+    /// A provider family (`ProviderAccountID.families`) with two or more enabled accounts shows as one
+    /// merged card at its base account's place. The base account's metric ids drive that card's
+    /// metrics, order and On Demand split even while the base account itself is off; only enabled
+    /// accounts feed its data. A family with one enabled account keeps its ordinary card.
     var displayGroups: [ProviderGroup] {
-        orderedProviders().compactMap { provider in
-            let widgetsByDescriptor = Dictionary(
-                visiblePlaced
-                    .filter { providerID(of: $0) == provider.id }
-                    .map { ($0.descriptorID, $0) },
-                uniquingKeysWith: { first, _ in first }
-            )
-            let widgets = metricOrder(for: provider.id).compactMap { widgetsByDescriptor[$0] }
-            guard !widgets.isEmpty else { return nil }
-            let alwaysShown = widgets.filter { !expandedMetricIDs.contains($0.descriptorID) }
-            let expanded = widgets.filter { expandedMetricIDs.contains($0.descriptorID) }
-            // A provider whose only enabled metrics are all marked expanded would otherwise render an
-            // empty card with a caret — promote them to always-shown so the card always has rows.
-            if alwaysShown.isEmpty {
-                return ProviderGroup(provider: provider, alwaysShownWidgets: expanded, expandedWidgets: [])
+        let providers = orderedProviders()
+        let merges = familyMerges(in: providers)
+        return providers.compactMap { provider in
+            guard let merge = merges[ProviderAccountID.family(of: provider.id)] else {
+                return group(for: provider, from: visiblePlaced)
             }
-            return ProviderGroup(provider: provider, alwaysShownWidgets: alwaysShown, expandedWidgets: expanded)
+            guard provider.id == merge.base.id else { return nil }
+            return group(for: merge.shownProvider, from: placed, accounts: merge.accounts)
         }
+    }
+
+    private struct FamilyMerge {
+        let base: Provider
+        let familyName: String
+        let accounts: [MergedAccount]
+
+        /// The merged card or menu-bar item's provider: the base account under the family name.
+        var shownProvider: Provider {
+            Provider(id: base.id, displayName: familyName, icon: base.icon, links: base.links)
+        }
+    }
+
+    /// The families to merge, keyed by family id. The base account is the bare family id when the
+    /// registry has it, otherwise the family's first card.
+    private func familyMerges(in providers: [Provider]) -> [String: FamilyMerge] {
+        var merges: [String: FamilyMerge] = [:]
+        for family in ProviderAccountID.families {
+            let members = providers.filter { ProviderAccountID.family(of: $0.id) == family }
+            let enabled = members.filter { isProviderEnabled($0.id) }
+            guard enabled.count > 1,
+                  let base = members.first(where: { $0.id == family }) ?? members.first else { continue }
+            let familyName = ProviderAccountID.familyDisplayNames[family] ?? base.displayName
+            let names = MergedAccount.shortNames(displayNames: enabled.map(\.displayName), familyName: familyName)
+            let accounts = zip(enabled, names).enumerated().map { index, pair in
+                MergedAccount(providerID: pair.0.id, shortName: pair.1, colorIndex: index)
+            }
+            merges[family] = FamilyMerge(base: base, familyName: familyName, accounts: accounts)
+        }
+        return merges
+    }
+
+    private func group(for provider: Provider, from candidates: [PlacedWidget],
+                       accounts: [MergedAccount] = []) -> ProviderGroup? {
+        let widgetsByDescriptor = Dictionary(
+            candidates
+                .filter { providerID(of: $0) == provider.id }
+                .map { ($0.descriptorID, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+        let widgets = metricOrder(for: provider.id).compactMap { widgetsByDescriptor[$0] }
+        guard !widgets.isEmpty else { return nil }
+        let alwaysShown = widgets.filter { !expandedMetricIDs.contains($0.descriptorID) }
+        let expanded = widgets.filter { expandedMetricIDs.contains($0.descriptorID) }
+        // A provider whose only enabled metrics are all marked expanded would otherwise render an
+        // empty card with a caret — promote them to always-shown so the card always has rows.
+        if alwaysShown.isEmpty {
+            return ProviderGroup(provider: provider, alwaysShownWidgets: expanded, expandedWidgets: [], accounts: accounts)
+        }
+        return ProviderGroup(provider: provider, alwaysShownWidgets: alwaysShown, expandedWidgets: expanded, accounts: accounts)
     }
 
     /// Every enabled provider with *all* the metrics it supports, in its saved metric order. Enabled and
@@ -138,15 +184,23 @@ extension LayoutStore {
     /// Pinned metrics grouped by provider, in the user's Customize order (provider order, then each
     /// provider's metric order). A temporarily disabled provider is excluded from the rendered groups
     /// but keeps its pins. Drives the menu-bar strip.
+    ///
+    /// A merged family (see `displayGroups`) is one item at its base account's place, carrying the base
+    /// account's pins; the other accounts' pins are kept but add nothing while the family is merged.
     var pinnedGroups: [ProviderMetrics] {
-        orderedProviders().compactMap { provider in
-            guard isProviderEnabled(provider.id) else { return nil }
+        let providers = orderedProviders()
+        let merges = familyMerges(in: providers)
+        return providers.compactMap { provider in
+            let merge = merges[ProviderAccountID.family(of: provider.id)]
+            if let merge, provider.id != merge.base.id { return nil }
+            guard merge != nil || isProviderEnabled(provider.id) else { return nil }
             // Keep the strip order matching Customize: always-shown pins first, then expanded ones.
             let metrics = orderedSupportedMetrics(for: provider.id).filter { pinnedMetricIDs.contains($0.id) }
             return metrics.isEmpty ? nil : ProviderMetrics(
-                provider: provider,
+                provider: merge?.shownProvider ?? provider,
                 alwaysShownMetrics: metrics.filter { !expandedMetricIDs.contains($0.id) },
-                expandedMetrics: metrics.filter { expandedMetricIDs.contains($0.id) }
+                expandedMetrics: metrics.filter { expandedMetricIDs.contains($0.id) },
+                accounts: merge?.accounts ?? []
             )
         }
     }

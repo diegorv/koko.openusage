@@ -52,16 +52,17 @@ enum MenuBarContentBuilder {
     static let maxBars = 4
 
     /// Resolve pinned provider groups into menu-bar content. `groups` is `LayoutStore.pinnedGroups`
-    /// (already ordered, disabled providers excluded); `data` resolves each descriptor to its live
-    /// `WidgetData` (i.e. `WidgetDataStore.data(for:)`), so the values follow the global meter style
-    /// just like the dashboard tiles.
+    /// (already ordered, disabled providers excluded); `data` resolves each descriptor in its group to
+    /// its live `WidgetData` (i.e. `WidgetDataStore.data(for:in:)`, which merges a family's accounts), so
+    /// the values follow the global meter style just like the dashboard tiles.
     ///
     /// The strip is dynamic: a pinned metric without data is dropped (one of two pins renders alone at
     /// full size), and a provider with no data-carrying pins contributes no icon at all. Pins are
     /// membership; the strip shows whatever subset is real right now.
-    static func build(groups: [ProviderMetrics], data: (WidgetDescriptor) -> WidgetData) -> MenuBarContent {
+    static func build(groups: [ProviderMetrics],
+                      data: (WidgetDescriptor, ProviderMetrics) -> WidgetData) -> MenuBarContent {
         let resolvedGroups = groups.compactMap { group -> MenuBarContent.Group? in
-            let metrics = group.metrics.map { resolve($0, data($0)) }.filter(\.hasData)
+            let metrics = group.metrics.map { resolve($0, data($0, group)) }.filter(\.hasData)
             guard !metrics.isEmpty else { return nil }
             return MenuBarContent.Group(
                 providerID: group.provider.id,

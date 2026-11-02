@@ -1,6 +1,6 @@
 # CLIProxyAPI Hub
 
-Shows the Claude and Codex accounts held by a CLIProxyAPI hub, each on its own card, with live limits read through the hub. The hub keeps the account tokens; OpenUsage only ever sends the
+Shows the Claude and Codex accounts held by a CLIProxyAPI hub, each as its own account, with live limits read through the hub. On the dashboard they join the other accounts of their family on one merged card (see [Several accounts of one provider](../dashboard.md#several-accounts-of-one-provider)). The hub keeps the account tokens; OpenUsage only ever sends the
 hub's management key.
 
 ## Setup
@@ -42,9 +42,9 @@ saved in `~/.config/openusage/cliproxy.json`, which can also be edited by hand:
 
 ## Cards
 
-- One card per Claude or Codex account of each enabled hub, named **Claude: <email> (Hub <label>)** or
-  **Codex: <email> (Hub <label>)**. Without a label, the hub's host name is used. Hub cards sit right
-  after the local cards of their family.
+- One Customize entry per Claude or Codex account of each enabled hub, named **Claude: <email> (Hub <label>)** or
+  **Codex: <email> (Hub <label>)**. Without a label, the hub's host name is used. Hub entries sit right
+  after the local entries of their family; on the dashboard they share their family's merged card.
 - A card's id stays the same as long as the hub id and account id do.
 - A new hub card turns on the first time it appears. After that, your Customize toggle wins.
 - On a fresh install, hub cards start off, like every provider. The welcome screen never finds or

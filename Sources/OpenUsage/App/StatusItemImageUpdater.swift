@@ -68,7 +68,7 @@ final class StatusItemImageUpdater {
         }
         let content = MenuBarContentBuilder.build(
             groups: container.layout.pinnedGroups,
-            data: { container.dataStore.data(for: $0) }
+            data: { container.dataStore.data(for: $0, in: $1) }
         )
         let colors = GaugeColors(mode: container.layout.menuBarBarColors, custom: container.layout.menuBarCustomColor)
         return MenuBarStripRenderer.image(for: content, style: container.layout.menuBarStyle, colors: colors)

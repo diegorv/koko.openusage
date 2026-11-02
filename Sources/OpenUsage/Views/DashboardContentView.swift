@@ -59,12 +59,6 @@ struct DashboardContentView: View {
 
     @ViewBuilder
     private var widgetContent: some View {
-        // The cross-provider Total Spend ring stays visible whenever the user allows it and an enabled
-        // provider can track spend, even before fresh data arrives or when every metric row is hidden.
-        if showTotalSpend, layout.hasSpendCapableProvider {
-            TotalSpendCard()
-                .padding(.bottom, density.sectionSpacing)
-        }
         if layout.displayGroups.isEmpty {
             EmptyDashboardView {
                 withAnimation(Motion.modeSwitch) { layout.screen = .customize }
@@ -74,6 +68,13 @@ struct DashboardContentView: View {
                 reorderSpaceName: reorderSpaceName,
                 reorderLift: $reorderLift
             )
+        }
+        // The cross-provider Total Spend ring sits below the provider sections so subscription limits
+        // read first. It stays visible whenever the user allows it and an enabled provider can track
+        // spend, even before fresh data arrives or when every metric row is hidden.
+        if showTotalSpend, layout.hasSpendCapableProvider {
+            TotalSpendCard()
+                .padding(.top, density.sectionSpacing)
         }
     }
 }

@@ -26,6 +26,15 @@ enum CLIProxyHubCards {
         return "\(family): \(account.email ?? account.id) (Hub \(label))"
     }
 
+    /// A hub card's Dashboard opens the hub's management page, where its accounts live.
+    private static func hubProvider(_ provider: Provider, hubURL: String) -> Provider {
+        let base = hubURL.hasSuffix("/") ? String(hubURL.dropLast()) : hubURL
+        let links = provider.links.map { link in
+            link.label == "Dashboard" ? ProviderLink(label: link.label, url: "\(base)/management.html#/auth-files") : link
+        }
+        return Provider(id: provider.id, displayName: provider.displayName, icon: provider.icon, links: links)
+    }
+
     /// Reads the hub config off the main actor (a local file only) and builds the hub cards. A config
     /// that can't be read is logged and yields no hub cards.
     static func loadRuntimes(
@@ -76,13 +85,13 @@ enum CLIProxyHubCards {
                 switch account.provider {
                 case .claude:
                     result.claude.append(CLIProxyClaudeRuntime(
-                        provider: ClaudeProvider.makeProvider(id: id, displayName: name),
+                        provider: hubProvider(ClaudeProvider.makeProvider(id: id, displayName: name), hubURL: hub.url),
                         account: account,
                         session: session
                     ))
                 case .codex:
                     result.codex.append(CLIProxyCodexRuntime(
-                        provider: CodexProvider.makeProvider(id: id, displayName: name),
+                        provider: hubProvider(CodexProvider.makeProvider(id: id, displayName: name), hubURL: hub.url),
                         account: account,
                         session: session
                     ))

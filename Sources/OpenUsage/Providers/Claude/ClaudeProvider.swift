@@ -92,6 +92,8 @@ final class ClaudeProvider: ProviderRuntime {
                 .exportingLimit("sonnet", unit: "percent"),
             .boundedDollars(id: "\(provider.id).extra", provider: provider, title: "Extra Usage", metricLabel: "Extra usage spent", limit: 100, valueWord: "spent")
                 .exportingLimit("extraUsage", unit: "usd", source: .progressOrValue(kind: .dollars))
+                // Claude reports nothing while extra usage is off or unspent; there's no row to read.
+                .hidingWithoutData()
         ]
     }
 

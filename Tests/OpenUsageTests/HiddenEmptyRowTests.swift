@@ -1,8 +1,9 @@
 import XCTest
 @testable import OpenUsage
 
-/// Claude's Session row hides while Anthropic reports no five-hour window (`five_hour: null`) and comes
-/// back by itself once a reading arrives. Other metrics keep their "No data" row.
+/// Claude's Session row hides while Anthropic reports no five-hour window (`five_hour: null`), and its
+/// Extra Usage row while extra usage is off. Both come back by themselves once a reading arrives. Other
+/// metrics keep their "No data" row.
 @MainActor
 final class HiddenEmptyRowTests: XCTestCase {
     private let work = ClaudeProvider.makeProvider()
@@ -19,11 +20,12 @@ final class HiddenEmptyRowTests: XCTestCase {
         return defaults
     }
 
-    private func layout(_ providers: [Provider], expanded: [String] = [], pinned: [String] = []) -> LayoutStore {
+    private func layout(_ providers: [Provider], metrics: [String] = ["claude.session", "claude.weekly"],
+                        expanded: [String] = [], pinned: [String] = []) -> LayoutStore {
         LayoutStore(
             registry: WidgetRegistry(providers: providers, descriptors: providers.flatMap(descriptors)),
             defaults: makeDefaults(),
-            defaultMetricIDs: DefaultLayout.expandingAccounts(["claude.session", "claude.weekly"],
+            defaultMetricIDs: DefaultLayout.expandingAccounts(metrics,
                                                               providerIDs: providers.map(\.id)),
             defaultPinnedMetricIDs: pinned,
             defaultExpandedMetricIDs: expanded,
@@ -65,11 +67,26 @@ final class HiddenEmptyRowTests: XCTestCase {
                 group.expandedWidgets.compactMap { store.descriptor(for: $0)?.id })
     }
 
-    func testClaudeSessionOptsInForEveryAccountAndNothingElseDoes() {
+    func testClaudeSessionAndExtraOptInForEveryAccountAndNothingElseDoes() {
         for provider in [work, home] {
             let optedIn = descriptors(provider).filter(\.hidesWithoutData).map(\.id)
-            XCTAssertEqual(optedIn, ["\(provider.id).session"])
+            XCTAssertEqual(optedIn, ["\(provider.id).session", "\(provider.id).extra"])
         }
+    }
+
+    func testExtraUsageHidesWhileItIsOff() async throws {
+        let body = #"{"seven_day":{"utilization":30,"resets_at":"2099-01-01T00:00:00.000Z"},"extra_usage":{"is_enabled":false}}"#
+        let data = await dataStore([(work, try claudeLines(body))])
+
+        XCTAssertEqual(shownIDs(data, layout([work], metrics: ["claude.weekly", "claude.extra"])).always, ["claude.weekly"])
+    }
+
+    func testExtraUsageShowsWhenItReportsSpend() async throws {
+        let body = #"{"seven_day":{"utilization":30,"resets_at":"2099-01-01T00:00:00.000Z"},"extra_usage":{"is_enabled":true,"used_credits":500,"monthly_limit":10000}}"#
+        let data = await dataStore([(work, try claudeLines(body))])
+
+        XCTAssertEqual(shownIDs(data, layout([work], metrics: ["claude.weekly", "claude.extra"])).always,
+                       ["claude.weekly", "claude.extra"])
     }
 
     func testSessionHidesWhenAnthropicReportsNoFiveHourWindow() async throws {

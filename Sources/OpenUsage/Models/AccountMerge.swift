@@ -103,6 +103,13 @@ extension WidgetData {
         }
     }
 
+    /// A family card's row when the family has one account: its reading, kept as that account's own.
+    static func soloAccount(_ reading: AccountReading) -> WidgetData {
+        var row = reading.data
+        if row.hasData { row.accountTicks = ticks([reading]) }
+        return row
+    }
+
     /// The row with generic account names, for images that leave the app: short names are usually an
     /// email's local part.
     func anonymizingAccounts() -> WidgetData {

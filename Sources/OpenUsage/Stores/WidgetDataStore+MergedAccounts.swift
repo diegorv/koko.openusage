@@ -25,6 +25,6 @@ extension WidgetDataStore {
             if accountDescriptor == nil { reading.hasData = false }
             return AccountReading(account: account, data: reading)
         }
-        return WidgetData.merging(readings)
+        return readings.count == 1 ? WidgetData.soloAccount(readings[0]) : WidgetData.merging(readings)
     }
 }

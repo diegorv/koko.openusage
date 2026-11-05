@@ -32,7 +32,7 @@ enum CLIProxyHubCards {
         let links = provider.links.map { link in
             link.label == "Dashboard" ? ProviderLink(label: link.label, url: "\(base)/management.html#/auth-files") : link
         }
-        return Provider(id: provider.id, displayName: provider.displayName, icon: provider.icon, links: links)
+        return Provider(id: provider.id, displayName: provider.displayName, icon: provider.icon, links: links, showsAsFamily: true)
     }
 
     /// Reads the hub config off the main actor (a local file only) and builds the hub cards. A config

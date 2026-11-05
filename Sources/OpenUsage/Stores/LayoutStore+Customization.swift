@@ -56,7 +56,8 @@ extension LayoutStore {
     /// A provider family (`ProviderAccountID.families`) with two or more enabled accounts shows as one
     /// merged card at its base account's place. The base account's metric ids drive that card's
     /// metrics, order and On Demand split even while the base account itself is off; only enabled
-    /// accounts feed its data. A family with one enabled account keeps its ordinary card.
+    /// accounts feed its data. A family with one enabled account keeps its ordinary card, unless that
+    /// account `showsAsFamily`.
     var displayGroups: [ProviderGroup] {
         let providers = orderedProviders()
         let merges = familyMerges(in: providers)
@@ -87,7 +88,7 @@ extension LayoutStore {
         for family in ProviderAccountID.families {
             let members = providers.filter { ProviderAccountID.family(of: $0.id) == family }
             let enabled = members.filter { isProviderEnabled($0.id) }
-            guard enabled.count > 1,
+            guard enabled.count > 1 || enabled.first?.showsAsFamily == true,
                   let base = members.first(where: { $0.id == family }) ?? members.first else { continue }
             let familyName = ProviderAccountID.familyDisplayNames[family] ?? base.displayName
             let names = MergedAccount.shortNames(displayNames: enabled.map(\.displayName), familyName: familyName)

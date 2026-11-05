@@ -43,8 +43,7 @@ struct AccountSlotsRow: View {
             .accessibilityHidden(true)
 
             if data.accountsReadAlike {
-                Text(["All Accounts", data.accountRows.first?.data.accountSummary(showsValue: false)]
-                    .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "))
+                Text(data.allAccountsSummary())
                     .font(.system(size: density.supportingPointSize))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)

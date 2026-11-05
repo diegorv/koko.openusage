@@ -123,6 +123,12 @@ extension WidgetData {
         return parts.joined(separator: " · ")
     }
 
+    /// The one line standing in for accounts that read alike. The merged reset is the soonest one.
+    func allAccountsSummary(now: Date = Date()) -> String {
+        let reset = accountSummary(showsValue: false, now: now)
+        return reset.isEmpty ? "All Accounts" : "All Accounts · \(reset)"
+    }
+
     /// A family card's row when the family has one account: its reading, kept as that account's own.
     static func soloAccount(_ reading: AccountReading) -> WidgetData {
         var row = reading.data

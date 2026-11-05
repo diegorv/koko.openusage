@@ -114,6 +114,33 @@ final class AccountSlotsTests: XCTestCase {
         XCTAssertFalse(data.hasData)
     }
 
+    func testASpentAccountReadsUsedUpWithAShortReset() {
+        let data = merged(percent(100, resetsIn: 74), percent(37, resetsIn: 110))
+
+        XCTAssertEqual(data.accountRows[0].data.accountSummary(showsValue: true, now: now), "Used Up · 3d 2h")
+        XCTAssertEqual(data.accountRows[1].data.accountSummary(showsValue: true, now: now), "63% left · 4d 14h")
+    }
+
+    func testALoneAccountLineLeavesTheValueToTheHeader() {
+        let data = WidgetData.soloAccount(AccountReading(account: me, data: percent(37, resetsIn: 110)))
+
+        XCTAssertEqual(data.accountRows[0].data.accountSummary(showsValue: false, now: now), "4d 14h")
+    }
+
+    func testAccountsReadAlikeOnlyWhenEveryoneMatches() {
+        XCTAssertTrue(merged(percent(0, resetsIn: 74), percent(0, resetsIn: 110)).accountsReadAlike)
+        XCTAssertFalse(merged(percent(0, resetsIn: 74), percent(5, resetsIn: 110)).accountsReadAlike)
+        var failed = percent(0, resetsIn: 74)
+        failed.hasData = false
+        let partial = WidgetData.merging([
+            AccountReading(account: me, data: percent(0, resetsIn: 110)),
+            AccountReading(account: leo, data: percent(0, resetsIn: 74)),
+            AccountReading(account: MergedAccount(providerID: "claude@x", shortName: "x", colorIndex: 2),
+                           data: failed, isUnavailable: true)
+        ])
+        XCTAssertFalse(partial.accountsReadAlike, "an account with no data must stay visible")
+    }
+
     func testSingleAccountRowIsUnchanged() {
         let data = WidgetData.merging([AccountReading(account: me, data: percent(36, resetsIn: 110))])
 

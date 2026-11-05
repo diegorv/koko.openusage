@@ -18,7 +18,7 @@ When you expand a card, the tucked-away metrics open below the line as a single-
 
 When two or more Claude accounts are on (local logins, Claude Swap, or CLIProxyAPI hub accounts alike), they share one **Claude** card instead of one card each. The same goes for Codex.
 
-- A percent row splits its bar into one equal slot per account, each filled by that account alone in its own color. A line per account under the bar shows its value and its own reset.
+- A percent row splits its bar into one equal slot per account, each filled by that account alone in its own color. A line per account under the bar shows its value and the time to its own reset, and a spent account reads `Used Up` in red. When every account reads the same, one `All Accounts` line replaces them, and a lone account's line skips the value already in the header.
 - The row's header shows the combined value, the average of the accounts. It follows the Used/Left setting.
 - These rows don't project your pace, because each account's window started at a different time. The combined value turns yellow at 80% used and red at 90%.
 - When two accounts share a name (two accounts in one organization, one email on two hubs), the name adds the email name or hub label in parentheses.

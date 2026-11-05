@@ -107,6 +107,22 @@ extension WidgetData {
         }
     }
 
+    /// Every account reads the same value, so one line can speak for them all. An account with no data
+    /// always keeps its own line.
+    var accountsReadAlike: Bool {
+        let rows = accountRows
+        return rows.count > 1 && unavailableAccounts.isEmpty && Set(rows.map(\.data.fraction)).count == 1
+    }
+
+    /// An account line's text: its reading and the time to its reset. A lone account's value is already
+    /// the row's header.
+    func accountSummary(showsValue: Bool, now: Date = Date()) -> String {
+        var parts: [String] = []
+        if showsValue { parts.append(meterState(now: now) == .spent ? "Used Up" : boundedHeadline) }
+        if let resetsAt, let time = Formatters.compactDuration(resetsAt.timeIntervalSince(now)) { parts.append(time) }
+        return parts.joined(separator: " · ")
+    }
+
     /// A family card's row when the family has one account: its reading, kept as that account's own.
     static func soloAccount(_ reading: AccountReading) -> WidgetData {
         var row = reading.data

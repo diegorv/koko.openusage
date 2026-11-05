@@ -39,7 +39,7 @@ final class ClaudeLaunchSnapshotTests: XCTestCase {
         XCTAssertNil(snapshot?.lines.first { $0.label == "Today" }, "cached spend tiles are recomputed, never replayed")
         XCTAssertEqual(snapshot?.lines.filter { $0.label == "Note" }.count, 1)
         XCTAssertEqual(snapshot?.warning?.hasPrefix("Updates blocked by Anthropic"), true)
-        XCTAssertEqual(snapshot?.plan, "Max 20x")
+        XCTAssertEqual(snapshot?.plan, "Ultra")
     }
 
     func testRateLimitWithoutLaunchSnapshotServesBadge() async {
@@ -205,7 +205,7 @@ final class ClaudeLaunchSnapshotTests: XCTestCase {
         ProviderSnapshot(
             providerID: providerID,
             displayName: "Claude",
-            plan: "Max 5x",
+            plan: "Max",
             lines: [
                 .progress(label: "Session", used: 40, limit: 100, format: .percent, resetsAt: sessionResetsAt, periodDurationMs: MetricPeriod.sessionMs),
                 .progress(label: "Weekly", used: 60, limit: 100, format: .percent, resetsAt: Self.future, periodDurationMs: MetricPeriod.weekMs),

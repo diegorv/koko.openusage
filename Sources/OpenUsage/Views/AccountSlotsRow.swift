@@ -42,8 +42,16 @@ struct AccountSlotsRow: View {
             .frame(height: density.meterHeight)
             .accessibilityHidden(true)
 
-            ForEach(slots, id: \.account.providerID) { slot in
-                accountLine(slot.account, slot.row)
+            if data.accountsReadAlike {
+                Text(["All Accounts", data.accountRows.first?.data.accountSummary(showsValue: false)]
+                    .compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "))
+                    .font(.system(size: density.supportingPointSize))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            } else {
+                ForEach(slots, id: \.account.providerID) { slot in
+                    accountLine(slot.account, slot.row)
+                }
             }
         }
     }
@@ -91,11 +99,15 @@ struct AccountSlotsRow: View {
                 .foregroundStyle(.primary)
                 .truncationMode(.tail)
             Spacer(minLength: 8)
-            Text(row.map { ([$0.boundedHeadline] + [$0.resetLabel].compactMap { $0 }).joined(separator: " · ") } ?? "No data")
-                .foregroundStyle(.secondary)
+            Text(row?.accountSummary(showsValue: slots.count > 1) ?? "No data")
+                .foregroundStyle(isSpent(row) ? Theme.meterFill(.critical) : AnyShapeStyle(.secondary))
                 .layoutPriority(1)
         }
         .font(.system(size: density.supportingPointSize))
         .lineLimit(1)
+    }
+
+    private func isSpent(_ row: WidgetData?) -> Bool {
+        row?.meterState() == .spent && slots.count > 1
     }
 }

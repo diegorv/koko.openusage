@@ -59,7 +59,6 @@ struct SettingsScreen: View {
             appearanceSection
             usageDisplaySection
             notificationsSection
-            privacySection
             commandLineSection
             advancedSection
             updatesSection
@@ -210,25 +209,6 @@ struct SettingsScreen: View {
                     .settingsSwitchStyle()
                     .hoverTooltip("Show how you're pacing on every metric, not just ones near their limit")
             }
-        }
-    }
-
-    private var privacySection: some View {
-        section("Privacy") {
-            row("Help Make OpenUsage Better") {
-                Toggle("", isOn: Binding(
-                    get: { container.telemetry.isEnabled },
-                    set: { container.telemetry.setEnabled($0) }
-                ))
-                .settingsSwitchStyle()
-            }
-            // Daily activity and crash reports are always on; the toggle only gates extra analytics.
-            Text("Share additional anonymous usage stats that tell the team where to improve.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

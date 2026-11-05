@@ -70,7 +70,7 @@ Every PR description must follow this structure so reviewers can skim it quickly
 
 ## Error Handling
 
-Always fail loudly into error logging (log file, PostHog) and show friendly errors to the user. Do not add silent fallbacks that hide real problems. Only validate at system boundaries (user input, external APIs); trust internal code and framework guarantees.
+Always fail loudly into error logging (log file) and show friendly errors to the user. Do not add silent fallbacks that hide real problems. Only validate at system boundaries (user input, external APIs); trust internal code and framework guarantees.
 
 ## UI
 

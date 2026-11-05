@@ -70,12 +70,6 @@ Alerts fire on a new crossing or pace worsening, then stay deduplicated while th
 
 All three alerts default off. The first time you turn one on, OpenUsage asks for notification permission; if you decline (or turn notifications off for OpenUsage in System Settings later), a warning mark appears on the Notifications header and an "Open System Settings" button shows under the toggles so you can re-enable them. A notification's title is the alert name, its subtitle names the provider and metric, and its body is the plain-language verdict. Tapping an alert opens the popover on the dashboard.
 
-## Privacy
-
-| Setting | Options | What it does |
-|---|---|---|
-| Help Make OpenUsage Better | On / Off | Off (default) sends nothing. On shares anonymous telemetry: a daily activity ping, crash reports, and provider-refresh summaries with error categories. See [Privacy & Usage Data](privacy.md) for exactly what is and isn't sent. |
-
 ## Advanced
 
 | Setting | Options | What it does |
@@ -87,9 +81,9 @@ All three alerts default off. The first time you turn one on, OpenUsage asks for
 
 See [Logging](logging.md) for the full behavior: subsystem tags, the file size cap, and the guarantee that secrets are never written.
 
-**Reset All Settings…** restores every setting on this screen to its default — appearance, usage display, notifications, privacy, log level, the global shortcut (cleared), Launch at Login (turned off), iCloud sync (turned off), and the update preferences (stable channel, automatic checks on) — and also resets all customization, exactly like Customize's Reset All: default layout, order, and menu-bar stars, with providers turned back on for the tools you have installed. The reset cannot be undone.
+**Reset All Settings…** restores every setting on this screen to its default — appearance, usage display, notifications, log level, the global shortcut (cleared), Launch at Login (turned off), iCloud sync (turned off), and the update preferences (stable channel, automatic checks on) — and also resets all customization, exactly like Customize's Reset All: default layout, order, and menu-bar stars, with providers turned back on for the tools you have installed. The reset cannot be undone.
 
-Not touched: provider logins and API keys, cached usage data, and your extra-analytics choice. Turning iCloud sync off as part of the reset works exactly like flipping its toggle off: this Mac's synced history is removed from the shared iCloud data, and your other Macs keep their own.
+Not touched: provider logins and API keys, cached usage data. Turning iCloud sync off as part of the reset works exactly like flipping its toggle off: this Mac's synced history is removed from the shared iCloud data, and your other Macs keep their own.
 
 ## Updates
 

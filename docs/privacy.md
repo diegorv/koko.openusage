@@ -1,34 +1,6 @@
 # Privacy & Usage Data
 
-All anonymous telemetry is **off by default**. Nothing is sent to the analytics service unless you turn
-on **Settings → Privacy → Help Make OpenUsage Better**. That one switch controls everything below:
-the daily activity ping, crash reports, and provider-refresh summaries.
-
-## What is shared when the toggle is on
-
-Once per local day, OpenUsage sends an anonymous **app use** ping: that the app was active today, the
-app and macOS version, which providers and metrics you have enabled, and which metrics you've pinned
-to the menu bar or tucked behind the "show more" caret. A random ID (not tied to you or any account)
-lets us count daily active users without identifying anyone.
-
-- **Crash reports** — if OpenUsage crashes, it saves a report and sends it the next time you open the
-  app: the technical stack trace plus the app and macOS version. No account details, credentials, or
-  usage values.
-
-It also sends, for each provider refreshed that day, at most one
-provider-refresh event:
-
-- **Provider refreshes** — per provider, how many refreshes succeeded or failed that day, the **kinds**
-  of errors that happened (for example "not logged in", "network", or an HTTP status group), and how
-  many manual refreshes you triggered.
-
-Turning the toggle off stops all of these.
-
-## What is never shared
-
-- No account details, names, emails, or credentials.
-- No actual usage **values** (no spend amounts, token counts, or limits).
-- No error **messages** or file paths — only coarse error categories as counts.
+OpenUsage sends no analytics, crash reports, or usage statistics.
 
 ## Credentials stored on this Mac
 
@@ -50,19 +22,10 @@ To avoid re-reading unchanged Claude, Codex, and pi logs after every relaunch, O
 parsed usage events in `~/Library/Application Support/OpenUsage/log-scan-cache/`. These records contain
 the usage metadata needed for local totals, including any per-event cost already recorded by a provider,
 but not raw JSONL lines or conversation text. They are private to your macOS account and are never sent
-to PostHog, a provider, or iCloud. Old source-file records are dropped as the scan window advances, and
+to a provider or iCloud. Old source-file records are dropped as the scan window advances, and
 identity caches that have not been used for 35 days are removed. OpenUsage's pricing engine runs after
 the cache is read, so its computed aggregates and totals are not persisted in this cache.
 
 If you explicitly turn on [iCloud Sync](icloud-sync.md), OpenUsage writes normalized daily tokens,
 spend, and model totals to its private iCloud container so your own Macs can show one combined summary.
-Credentials, account limits, provider responses, and raw logs are never written there. This is separate
-from anonymous usage analytics: iCloud Sync defaults off and uses your iCloud account, while the
-analytics toggle controls all PostHog events.
-
-## How it works
-
-- Data is fully anonymous: OpenUsage never identifies you to the analytics service and creates no user profile.
-- With the toggle off, the analytics service isn't even started, so it makes no network calls.
-- Counts are rolled up locally and sent as daily summaries, so the app's normal 10-minute refresh never turns into a flood of network calls.
-- Your choice and the anonymous ID are stored separately from the rest of the app's settings, so settings migrations and updates never turn telemetry back on or change your ID.
+Credentials, account limits, provider responses, and raw logs are never written there.

@@ -86,6 +86,8 @@ struct WidgetRowView: View {
             // The sparkline owns its own label + bars; a chart with no real points falls through to the
             // unbounded "No data" row below (and so descriptor template data never leaks here).
             UsageSparkline(data: data)
+        } else if data.hasData, data.showsAccountSlots {
+            AccountSlotsRow(data: data, onToggleMeterStyle: onToggleMeterStyle)
         } else if data.isBounded {
             boundedRow
         } else {

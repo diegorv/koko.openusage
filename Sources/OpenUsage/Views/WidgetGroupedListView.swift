@@ -205,10 +205,13 @@ struct WidgetGroupedListView: View {
         // bottom, so collapsing the caret hides them along with the expanded metrics — they're part of
         // the expander, not always-visible chrome. The caret shows for any provider with expanded
         // content (metrics OR links), so a links-only provider still gets a caret to reveal its buttons.
-        // A merged card's legend follows its last visible metric row.
+        // A merged card's legend follows its last visible metric row, and only keys rows drawing ticks:
+        // slotted rows name their accounts themselves.
         let hasLinks = !links.isEmpty
         let hasExpandedContent = hasExpandedMetrics || hasLinks
-        let legend: [DashboardMetricCardRow] = accounts.isEmpty ? [] : [.legend(accounts)]
+        let visibleRows = alwaysRows + (isExpanded ? expandedRows : [])
+        let needsLegend = visibleRows.contains { $0.data.hasData && $0.data.showsAccountTicks }
+        let legend: [DashboardMetricCardRow] = needsLegend ? [.legend(accounts)] : []
         let always = alwaysRows.map(DashboardMetricCardRow.metric)
         guard hasExpandedContent else { return always + legend }
         guard isExpanded else { return always + legend + [.toggle] }

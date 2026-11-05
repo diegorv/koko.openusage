@@ -60,9 +60,10 @@ private enum MergeWarnings {
 
 /// An account's own reading on a merged bar, drawn as a colored tick at `fraction`.
 struct AccountTick: Hashable {
-    let account: MergedAccount
+    var account: MergedAccount
     let used: Double
     let limit: Double
+    var resetsAt: Date? = nil
 
     /// Share of the limit used, 0...1.
     var fraction: Double {
@@ -78,6 +79,44 @@ struct AccountReading {
 }
 
 extension WidgetData {
+    /// A merged percent row shows one slot per account instead of a single averaged bar.
+    var showsAccountSlots: Bool {
+        kind == .percent && isBounded && !accountTicks.isEmpty
+    }
+
+    /// Bounded money and count rows have no slots: they keep the summed bar with a tick per account.
+    var showsAccountTicks: Bool {
+        !accountTicks.isEmpty && !showsAccountSlots
+    }
+
+    /// Each account's own reading on a slotted row, as row data so it formats and follows the global
+    /// Used/Left and reset settings like any other row.
+    var accountRows: [(account: MergedAccount, data: WidgetData)] {
+        guard showsAccountSlots else { return [] }
+        return accountTicks.map { tick in
+            var row = self
+            row.used = tick.used
+            row.limit = tick.limit
+            row.resetsAt = tick.resetsAt
+            row.accountTicks = []
+            return (tick.account, row)
+        }
+    }
+
+    /// The row with generic account names, for images that leave the app: short names are usually an
+    /// email's local part.
+    func anonymizingAccounts() -> WidgetData {
+        var row = self
+        row.accountTicks = accountTicks.enumerated().map { index, tick in
+            var tick = tick
+            tick.account = MergedAccount(providerID: tick.account.providerID,
+                                         shortName: "Account \(index + 1)",
+                                         colorIndex: tick.account.colorIndex)
+            return tick
+        }
+        return row
+    }
+
     /// Folds the same metric of several accounts into one row. Accounts without the metric
     /// (`hasData == false`) are left out. Percent meters average; dollar and count amounts (meters,
     /// `.values` rows, chart days) sum. The reset is the soonest one, with that account's window
@@ -130,7 +169,8 @@ extension WidgetData {
         present.compactMap { reading in
             guard !reading.data.isChart, reading.data.valueTextOverride == nil,
                   let limit = reading.data.limit else { return nil }
-            return AccountTick(account: reading.account, used: reading.data.used, limit: limit)
+            return AccountTick(account: reading.account, used: reading.data.used, limit: limit,
+                               resetsAt: reading.data.resetsAt)
         }
     }
 

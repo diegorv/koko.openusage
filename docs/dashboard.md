@@ -20,12 +20,14 @@ When you expand a card, the tucked-away metrics open below the line as a single-
 
 When two or more Claude accounts are on (local logins, Claude Swap, or CLIProxyAPI hub accounts alike), they share one **Claude** card instead of one card each. The same goes for Codex.
 
-- A bar shows the average of the accounts' percentages, in the usual pace color. A thin colored tick per account marks where that account sits on its own.
-- A small key under the rows names each account next to its tick color. When two accounts share a name (two accounts in one organization, one email on two hubs), the key adds the email name or hub label in parentheses.
-- Money and count rows (Today, Last 30 Days, credits) show the sum across the accounts. The reset is the soonest one.
-- An account that doesn't report a metric is left out of that row's average and gets no tick.
+- A percent row splits its bar into one equal slot per account, each filled by that account alone in its own color. A line per account under the bar shows its value and its own reset.
+- The row's header shows the combined value, the average of the accounts. It follows the Used/Left setting.
+- These rows don't project your pace, because each account's window started at a different time. The combined value turns yellow at 80% used and red at 90%.
+- When two accounts share a name (two accounts in one organization, one email on two hubs), the name adds the email name or hub label in parentheses.
+- Money and count rows (Today, Last 30 Days, credits) show the sum across the accounts. The reset is the soonest one. Those with a limit keep one bar with a thin colored tick per account, and a small key names each account's color.
+- An account that doesn't report a metric is left out of that row's average and gets no slot.
 - The Rate Limit Resets popover lists every account's resets but has no **Use** button, since one click can't tell which account to spend. To use a reset, turn the other accounts off so that account has its own card again.
-- With only one account on, the card looks just like a normal card: no ticks and no key.
+- With only one account on, the card looks just like a normal card: no slots, ticks or key.
 
 The merged card uses the first account's metric settings (the plain **Claude** or **Codex** entry in Customize): which metrics show, their order, and Always Visible / On Demand. Turning an account off in Customize removes it from the merged card. Hiding or refreshing the card from its header acts on every account in it.
 

@@ -84,7 +84,7 @@ enum ShareCardRenderer {
         let view = ShareCardView(
             provider: group.provider,
             plan: group.memberIDs.lazy.compactMap { dataStore.plan(for: $0) }.first,
-            rows: rows,
+            rows: rows.map { $0.anonymizingAccounts() },
             appearance: appearance,
             expandBoundaryIndex: isExpanded ? alwaysRows.count : nil
         )

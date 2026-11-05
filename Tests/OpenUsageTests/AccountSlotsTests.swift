@@ -68,6 +68,13 @@ final class AccountSlotsTests: XCTestCase {
         XCTAssertTrue(data.showsAccountTicks)
     }
 
+    func testAnonymizedRowHidesAccountNamesAndKeepsValues() {
+        let data = merged(percent(38, resetsIn: 110), percent(73, resetsIn: 74)).anonymizingAccounts()
+
+        XCTAssertEqual(data.accountRows.map(\.account.shortName), ["Account 1", "Account 2"])
+        XCTAssertEqual(data.accountRows.map(\.data.fraction), [0.62, 0.27])
+    }
+
     func testSingleAccountRowIsUnchanged() {
         let data = WidgetData.merging([AccountReading(account: me, data: percent(36, resetsIn: 110))])
 

@@ -60,7 +60,7 @@ private enum MergeWarnings {
 
 /// An account's own reading on a merged bar, drawn as a colored tick at `fraction`.
 struct AccountTick: Hashable {
-    let account: MergedAccount
+    var account: MergedAccount
     let used: Double
     let limit: Double
     var resetsAt: Date? = nil
@@ -101,6 +101,20 @@ extension WidgetData {
             row.accountTicks = []
             return (tick.account, row)
         }
+    }
+
+    /// The row with generic account names, for images that leave the app: short names are usually an
+    /// email's local part.
+    func anonymizingAccounts() -> WidgetData {
+        var row = self
+        row.accountTicks = accountTicks.enumerated().map { index, tick in
+            var tick = tick
+            tick.account = MergedAccount(providerID: tick.account.providerID,
+                                         shortName: "Account \(index + 1)",
+                                         colorIndex: tick.account.colorIndex)
+            return tick
+        }
+        return row
     }
 
     /// Folds the same metric of several accounts into one row. Accounts without the metric

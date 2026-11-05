@@ -61,12 +61,15 @@ final class CodexProvider: ProviderRuntime {
             // Declared right after Weekly so they group with the core rate-limit meters; seeded On
             // Demand (below the caret) and unpinned in `DefaultLayout`.
             .percent(id: "\(provider.id).spark", provider: provider, title: "Spark")
-                .exportingLimit("spark", unit: "percent"),
+                .exportingLimit("spark", unit: "percent")
+                .hidingWithoutData(),
             .percent(id: "\(provider.id).sparkWeekly", provider: provider, title: "Spark Weekly")
-                .exportingLimit("sparkWeekly", unit: "percent"),
+                .exportingLimit("sparkWeekly", unit: "percent")
+                .hidingWithoutData(),
             .combined(id: "\(provider.id).credits", provider: provider, title: "Extra Usage", metricLabel: "Credits")
                 .exportingLimit("credits", kind: .balance, unit: "credits", source: .value(kind: .count, label: "credits"))
-                .exportingLimit("creditValue", kind: .balance, unit: "usd", source: .value(kind: .dollars)),
+                .exportingLimit("creditValue", kind: .balance, unit: "usd", source: .value(kind: .dollars))
+                .hidingWithoutData(),
             .values(id: "\(provider.id).rateLimitResets", provider: provider, title: "Rate Limit Resets", metricLabel: "Rate Limit Resets", traySuffix: "resets", showsResetExpiries: true)
                 .exportingLimit("rateLimitResets", kind: .balance, unit: "resets", source: .value(kind: .count, label: "available"))
         ]

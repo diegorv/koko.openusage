@@ -105,6 +105,28 @@ final class CLIProxyCodexRuntimeTests: XCTestCase {
         XCTAssertEqual(http.requests.filter(Self.isTokenReport).count, 1)
     }
 
+    func testEmptySparkAndCreditRowsHide() async throws {
+        let body = Self.usageBody.replacingOccurrences(of: #""balance": 12.5"#, with: #""balance": 0"#)
+        let http = RoutingHTTPClient { _ in Self.envelope(body: body) }
+        let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.codex("codex-a.json")])], http: http)
+        let id = runtime.provider.id
+
+        let snapshot = await runtime.refresh()
+
+        XCTAssertNil(snapshot.lines.first { $0.label == "Credits" })
+        let hiding = runtime.widgetDescriptors.filter(\.hidesWithoutData).map(\.id)
+        XCTAssertEqual(hiding, ["\(id).spark", "\(id).sparkWeekly", "\(id).credits"])
+    }
+
+    func testACreditBalanceStillShows() async throws {
+        let http = RoutingHTTPClient { _ in Self.envelope(body: Self.usageBody) }
+        let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.codex("codex-a.json")])], http: http)
+
+        let snapshot = await runtime.refresh()
+
+        XCTAssertNotNil(snapshot.lines.first { $0.label == "Credits" })
+    }
+
     func testAFailedTokenReportKeepsTheLimitsAndRetries() async throws {
         let http = RoutingHTTPClient { request in
             Self.isTokenReport(request) ? Self.envelope(status: 503, body: "") : Self.envelope(body: Self.usageBody)

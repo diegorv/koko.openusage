@@ -14,6 +14,9 @@ final class CLIProxyClaudeRuntime: CLIProxyHubCard {
     private let now: @Sendable () -> Date
     /// Last successful limits, kept so a rate-limited refresh still shows them with a staleness note.
     private var lastGoodUsage: ClaudeMappedUsage?
+    /// The hub keeps the login, so the plan comes from the profile endpoint. Read once it succeeds; a
+    /// failed read tries again on the next refresh.
+    private var plan: String?
 
     init(
         provider: Provider,
@@ -49,6 +52,7 @@ final class CLIProxyClaudeRuntime: CLIProxyHubCard {
             AppLog.warn(LogTag.plugin("cliproxy"), "\(provider.id): hub account login rejected (HTTP \(response.statusCode)); needs a re-login on the hub")
             return ProviderSnapshot.error(provider: provider, error: CLIProxyHubAccountError.reloginRequired)
         }
+        await loadPlanIfNeeded()
         if response.statusCode == 429 {
             let retryAfter = ClaudeUsageMapper.parseRetryAfterSeconds(response, now: now())
             AppLog.info(LogTag.plugin("cliproxy"), "\(provider.id): rate-limited (serving \(lastGoodUsage == nil ? "badge" : "last-good usage"))")
@@ -60,6 +64,20 @@ final class CLIProxyClaudeRuntime: CLIProxyHubCard {
             return snapshot(mapped)
         } catch {
             return ProviderSnapshot.error(provider: provider, error: error)
+        }
+    }
+
+    private func loadPlanIfNeeded() async {
+        guard plan == nil else { return }
+        // Only `usageURL` locates the profile; the hub supplies the token.
+        let config = ClaudeOAuthConfig(usageURL: Self.usageURL, refreshURL: Self.usageURL, clientID: "")
+        do {
+            let response = try await usageClient.fetchProfile(accessToken: "", config: config)
+            let profile = try ClaudeUsageClient.decodeProfile(response)
+            plan = ClaudeUsageMapper.formatLivePlan(profile: profile, credentials: ClaudeOAuth())
+        } catch {
+            guard !Task.isCancelled else { return }
+            AppLog.warn(LogTag.plugin("cliproxy"), "\(provider.id): plan lookup failed; retrying next refresh: \(error)")
         }
     }
 
@@ -76,7 +94,7 @@ final class CLIProxyClaudeRuntime: CLIProxyHubCard {
         var lines = mapped.lines
         MetricLine.appendNoDataIfNeeded(&lines)
         return ProviderSnapshot.make(
-            provider: provider, plan: mapped.plan, lines: lines, refreshedAt: now(), warning: mapped.warning
+            provider: provider, plan: plan ?? mapped.plan, lines: lines, refreshedAt: now(), warning: mapped.warning
         )
     }
 }

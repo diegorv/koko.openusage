@@ -165,4 +165,12 @@ final class CLIProxyHubLocalMatchTests: XCTestCase {
             .replacingOccurrences(of: "=", with: "")
         return "e30.\(encoded).sig"
     }
+
+    @MainActor
+    func testCatalogCanLeaveOutLocalClaudeAndCodexSessions() {
+        let providers = ProviderCatalog.make(includesLocalClaudeAndCodex: false)
+
+        XCTAssertFalse(providers.contains { $0 is ClaudeProvider || $0 is CodexProvider })
+        XCTAssertTrue(providers.contains { $0 is CursorProvider }, "other providers stay")
+    }
 }

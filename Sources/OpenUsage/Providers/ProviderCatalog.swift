@@ -11,7 +11,8 @@ enum ProviderCatalog {
         claudeIdentityKeys: [String: String] = [:],
         hubCards: [CLIProxyClaudeRuntime] = [],
         codexHubCards: [CLIProxyCodexRuntime] = [],
-        hiddenLocalCardIDs: Set<String> = []
+        hiddenLocalCardIDs: Set<String> = [],
+        includesLocalClaudeAndCodex: Bool = true
     ) -> [ProviderRuntime] {
         // Default provider order (see AGENTS.md "## Providers"): the three established providers first,
         // then every other provider alphabetically by display name.
@@ -83,6 +84,9 @@ enum ProviderCatalog {
             ZAIProvider()
         ]
         // Local cards whose account a hub also holds (see `CLIProxyHubCards.hiddenLocalCardIDs`).
-        return providers.filter { !hiddenLocalCardIDs.contains($0.provider.id) }
+        return providers.filter { runtime in
+            if !includesLocalClaudeAndCodex, runtime is ClaudeProvider || runtime is CodexProvider { return false }
+            return !hiddenLocalCardIDs.contains(runtime.provider.id)
+        }
     }
 }

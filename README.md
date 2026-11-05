@@ -12,21 +12,20 @@ OpenUsage shows how much of your AI coding plans you've used: session and weekly
 
 A personal fork of [robinebers/openusage](https://github.com/robinebers/openusage). It differs from upstream in:
 
-- **Telemetry is off by default.** Nothing is sent to PostHog, including the daily activity ping and crash reports, until you turn on **Settings → Privacy → Help Make OpenUsage Better**. With it off, the analytics SDK is never started. See [Privacy & usage data](docs/privacy.md).
+- **No telemetry.** No analytics or crash reports are sent.
+- **Reads Claude and Codex from a CLIProxyAPI hub**, with one card per provider showing each account.
 - **Menu bar tweaks.** Larger text, a five-segment gauge beside each value, and a **Bar Colors** setting (Monochrome, Alerts Only, Provider Colors, or Custom). See [Menu bar](docs/menu-bar.md).
 - **No auto-update.** Build from source with `./script/build_and_run.sh`; local builds never check for updates.
 
 ## Installation
 
-**Homebrew:**
+Build, sign with your local Apple Development identity, and install to `/Applications`:
 
 ```sh
-brew install --cask openusage
+./script/build_and_run.sh install
 ```
 
-**Direct download:** grab the latest universal DMG from the [releases page](https://github.com/robinebers/openusage/releases/latest), open it, and drag OpenUsage to your Applications folder.
-
-Either way, the app updates itself in place via signed, notarized [Sparkle](docs/updates.md) updates. Requires macOS 15 (Sequoia) or later.
+Requires macOS 15 (Sequoia) or later.
 
 ## Supported Providers
 

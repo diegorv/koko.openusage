@@ -45,6 +45,8 @@ CLI_BINARY="$APP_HELPERS/openusage"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 RESOURCE_BUNDLE_NAME="${TARGET_NAME}_${TARGET_NAME}.bundle"
 SIGN_ENTITLEMENTS="$ROOT_DIR/script/OpenUsage.local.entitlements.plist"
+# An installed app must not allow debugger attachment (get-task-allow).
+[ "$MODE" = "install" ] && SIGN_ENTITLEMENTS="$ROOT_DIR/script/OpenUsage.release.entitlements.plist"
 
 pkill -x "$TARGET_NAME" >/dev/null 2>&1 || true
 
@@ -191,6 +193,10 @@ case "$MODE" in
     echo "==> launched $APP_DISPLAY (dist/$APP_DISPLAY.app)"
     ;;
   install)
+    if [ -z "$CODESIGN_IDENTITY" ]; then
+      echo "install needs a signing identity; refusing to install an ad-hoc build" >&2
+      exit 1
+    fi
     rm -rf "/Applications/$APP_DISPLAY.app"
     /usr/bin/ditto "$APP_BUNDLE" "/Applications/$APP_DISPLAY.app"
     /usr/bin/open -n "/Applications/$APP_DISPLAY.app"

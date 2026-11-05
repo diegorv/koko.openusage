@@ -140,11 +140,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
 
-    /// Flush pending snapshot writes and queued telemetry on quit. The SDK's lifecycle autocapture
-    /// is off (we emit our own daily rollups), so it won't auto-flush on termination — this explicit
-    /// flush keeps low-frequency events from being stranded across a clean quit.
+    /// Flush pending snapshot writes on quit.
     public func applicationWillTerminate(_ notification: Notification) {
         container?.dataStore.flushPendingSnapshotWork()
-        container?.telemetry.flush()
     }
 }

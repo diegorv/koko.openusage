@@ -20,7 +20,7 @@ struct DailyUsageSeries: Hashable, Sendable, Codable {
     var daily: [DailyUsageEntry]
 }
 
-/// The calendar window shared by local scanners, combined iCloud history, and the usage trend.
+/// The calendar window shared by local scanners and the usage trend.
 /// `previousDays` excludes today, so 30 means today plus the previous 30 calendar days.
 enum UsageHistoryWindow {
     static let previousDays = 30
@@ -71,7 +71,7 @@ struct ModelUsageSeries: Hashable, Sendable, Codable {
 
 /// The presentation-free daily history retained on a provider snapshot. The same normalized values
 /// feed the local spend rows and, when explicitly classified as machine-local by the provider's
-/// descriptor, the private iCloud sync file.
+/// descriptor.
 struct ProviderUsageHistory: Hashable, Sendable, Codable {
     var series: DailyUsageSeries
     var modelUsage: ModelUsageSeries?

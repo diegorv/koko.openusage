@@ -70,8 +70,6 @@ The UI reads from a few observable stores:
 - `LayoutStore` — which metrics are shown, the provider/metric order, and which metrics are starred for the
   menu bar.
 - `ProviderEnablementStore` — which providers the user has turned on or off.
-- `ICloudUsageSyncStore` — one coordinated, atomic history file per Mac, iCloud metadata notifications,
-  and the visible device/error state. File access is injected for lifecycle and failure tests.
 
 Refresh runs on a timer in `AppContainer`; each pass respects the cache, so the network is only hit once a
 snapshot has actually expired.

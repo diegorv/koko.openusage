@@ -110,8 +110,7 @@ final class StaleWhileRevalidateTests: XCTestCase {
             local: firstSnapshot,
             history: history,
             descriptor: historyDescriptor,
-            now: fixedNow,
-            combined: false
+            now: fixedNow
         )
         let runtime = MutableProviderRuntime(
             provider: provider,
@@ -225,8 +224,6 @@ final class StaleWhileRevalidateTests: XCTestCase {
             defaults: defaults
         )
         _ = await store.refresh(providerID: provider.id, force: true)
-        var historyChangeCount = 0
-        store.onLocalHistoryChanged = { historyChangeCount += 1 }
 
         runtime.snapshot = snapshot(
             used: 0, plan: "Partial cancelled result",
@@ -256,7 +253,6 @@ final class StaleWhileRevalidateTests: XCTestCase {
         let retained = try XCTUnwrap(store.localSnapshots[provider.id])
         XCTAssertEqual(retained.plan, "Last good")
         XCTAssertEqual(retained.usageHistory, history)
-        XCTAssertEqual(historyChangeCount, 0)
         XCTAssertFalse(store.refreshingProviderIDs.contains(provider.id))
         XCTAssertEqual(cache.loadSnapshots(providerIDs: [provider.id])[provider.id]?.plan, "Last good")
     }

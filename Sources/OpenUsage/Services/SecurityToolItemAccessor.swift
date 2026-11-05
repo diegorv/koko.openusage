@@ -16,7 +16,6 @@ struct SecurityToolItemAccessor: SecurityItemAccessing {
 
     static func handles(service: String) -> Bool {
         service.hasPrefix(ClaudeAuthStore.keychainServicePrefix)
-            || service.hasSuffix(KeychainICloudDeviceIDStore.serviceSuffix)
             || [
                 CopilotAuthStore.ghKeychainService,
                 CursorAuthStore.keychainAccessTokenService,

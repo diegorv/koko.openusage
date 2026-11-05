@@ -57,6 +57,25 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         return nil
     }
 
+    func testDashboardLinkOpensTheConfiguredHub() throws {
+        for url in ["https://hub.example.ts.net:8317", "https://hub.example.ts.net:8317/"] {
+            let hub = CLIProxyHubConfig.Hub(
+                id: "h", label: nil, url: url, managementKey: "key", enabled: true,
+                accounts: [
+                    Self.claude("claude-a.json"),
+                    CLIProxyHubAccount(id: "codex-a.json", authIndex: "i", provider: .codex)
+                ]
+            )
+            let cards = CLIProxyHubCards.runtimes(hubs: [hub], http: RoutingHTTPClient { _ in Self.envelope(body: "") })
+
+            for provider in [cards.claude[0].provider, cards.codex[0].provider] {
+                XCTAssertEqual(provider.links.first { $0.label == "Dashboard" }?.url,
+                               "https://hub.example.ts.net:8317/management.html#/auth-files")
+                XCTAssertEqual(provider.links.count, 2, "Status stays")
+            }
+        }
+    }
+
     // MARK: - Limits
 
     private nonisolated static let profileBody = #"{"account":{"uuid":"a"},"organization":{"uuid":"o","organization_type":"claude_max","rate_limit_tier":"default_claude_max_20x"}}"#

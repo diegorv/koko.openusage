@@ -28,7 +28,6 @@ final class AntigravityLayoutTests: XCTestCase {
             "antigravity.claude", "antigravity.claudeWeekly",
             "antigravity.today", "antigravity.yesterday", "antigravity.last30"
         ])
-        XCTAssertEqual(store.spendCapableProviders.map(\.id), ["antigravity"])
     }
 
     func testExistingUserLayoutAutoSeedsWeeklyMetricsBelowCaretForClaudePool() {

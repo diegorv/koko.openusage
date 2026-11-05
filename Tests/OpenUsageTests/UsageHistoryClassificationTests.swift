@@ -14,7 +14,6 @@ final class UsageHistoryClassificationTests: XCTestCase {
         ]
 
         for descriptors in descriptorSets {
-            XCTAssertTrue(descriptors.contains(where: \.isSpendTile))
             XCTAssertEqual(descriptors.compactMap(\.historyResource).count, 1)
         }
 

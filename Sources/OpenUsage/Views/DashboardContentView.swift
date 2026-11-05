@@ -14,7 +14,6 @@ struct DashboardContentView: View {
     @Binding var scrollPosition: ScrollPosition
 
     @AppStorage(DensitySetting.key) private var density = DensitySetting.regular
-    @AppStorage(TotalSpendSetting.key) private var showTotalSpend = true
 
     var body: some View {
         PopoverScrollView {
@@ -62,13 +61,6 @@ struct DashboardContentView: View {
                 reorderSpaceName: reorderSpaceName,
                 reorderLift: $reorderLift
             )
-        }
-        // The cross-provider Total Spend ring sits below the provider sections so subscription limits
-        // read first. It stays visible whenever the user allows it and an enabled provider can track
-        // spend, even before fresh data arrives or when every metric row is hidden.
-        if showTotalSpend, layout.hasSpendCapableProvider {
-            TotalSpendCard()
-                .padding(.top, density.sectionSpacing)
         }
     }
 }

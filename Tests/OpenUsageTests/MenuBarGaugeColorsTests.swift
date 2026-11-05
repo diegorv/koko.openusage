@@ -37,7 +37,7 @@ final class MenuBarGaugeColorsTests: XCTestCase {
         let colors = GaugeColors(mode: .provider, custom: 0)
         XCTAssertEqual(
             colors.color(for: metric(used: 0.10), providerID: "claude"),
-            TotalSpendPalette.color(for: "claude")
+            ProviderPalette.color(for: "claude")
         )
     }
 }

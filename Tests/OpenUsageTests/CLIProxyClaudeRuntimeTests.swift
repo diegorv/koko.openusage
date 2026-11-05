@@ -148,7 +148,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         XCTAssertEqual(runtime.widgetDescriptors.map(\.id), [
             "\(id).session", "\(id).weekly", "\(id).fable", "\(id).sonnet", "\(id).extra"
         ])
-        XCTAssertFalse(runtime.widgetDescriptors.contains { $0.isSpendTile || $0.historyResource != nil })
+        XCTAssertFalse(runtime.widgetDescriptors.contains { $0.historyResource != nil })
         // Same suffixes as the local Claude card, so `DefaultLayout.expandingAccounts` gives hub cards
         // the Claude family's defaults.
         let local = Set(ClaudeProvider().widgetDescriptors.map(\.id))

@@ -35,7 +35,7 @@ If neither is available you'll see *Start Antigravity or run `agy` and try again
 
 ## Spend and usage history
 
-OpenUsage reads generation token counts, including the fixed system prompt, from every `~/.gemini/antigravity*/conversations` store (the `agy` CLI, the Antigravity IDE, the Antigravity 2.0 app, and ACP sessions) and estimates their API-equivalent cost using the shared [model pricing](../pricing.md). Today, Yesterday, and Last 30 Days contribute to the Total Spend card alongside the other providers. These are estimates, not charges from your Antigravity subscription, and conversation data never leaves your Mac. Previously scanned conversations are reused on refresh, so only new generation records need to be read.
+OpenUsage reads generation token counts, including the fixed system prompt, from every `~/.gemini/antigravity*/conversations` store (the `agy` CLI, the Antigravity IDE, the Antigravity 2.0 app, and ACP sessions) and estimates their API-equivalent cost using the shared [model pricing](../pricing.md). These are estimates, not charges from your Antigravity subscription, and conversation data never leaves your Mac. Previously scanned conversations are reused on refresh, so only new generation records need to be read.
 
 When the model picker is on its default, Antigravity logs a placeholder ID (`gemini-default`, `gemini-pro-default`) and records the model that actually served the turn as a display label such as "Gemini 3.1 Pro (High)". OpenUsage prices those turns by that label, falling back to the placeholder ID when the label has no known rate (`gemini-pro-default` prices as Gemini 3.1 Pro). Anything that still cannot be priced remains visible in the unknown-models warning.
 

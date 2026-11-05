@@ -79,6 +79,45 @@ final class CLIProxyCodexRuntimeTests: XCTestCase {
         XCTAssertEqual(header["Authorization"], CLIProxyHubClient.tokenPlaceholder)
     }
 
+    nonisolated private static func isTokenReport(_ request: HTTPRequest) -> Bool {
+        (payload(request)["url"] as? String)?.contains("analytics/daily-workspace-usage-counts") == true
+    }
+
+    nonisolated private static func tokenBody(_ day: String) -> String {
+        #"{"data":[{"date":"\#(day)T00:00:00Z","totals":{"turns":3,"text_total_tokens":1500}},{"date":"2020-01-01","totals":{"turns":1}}]}"#
+    }
+
+    func testShowsTokenHistoryReadThroughTheHubAndReadsItHourly() async throws {
+        let today = DailyUsageAccumulator.dayKey(from: Date())
+        let http = RoutingHTTPClient { request in
+            Self.envelope(body: Self.isTokenReport(request) ? Self.tokenBody(today) : Self.usageBody)
+        }
+        let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.codex("codex-a.json")])], http: http)
+
+        let first = await runtime.refresh()
+        let second = await runtime.refresh()
+
+        guard case .values(_, let values, _, _, _, _) = try XCTUnwrap(first.lines.first { $0.label == "Today" }) else {
+            return XCTFail("Today should be a values row")
+        }
+        XCTAssertEqual(values.first { $0.kind == .count }?.number, 1500)
+        XCTAssertNotNil(second.lines.first { $0.label == "Last 30 Days" }, "the last read stays on screen")
+        XCTAssertEqual(http.requests.filter(Self.isTokenReport).count, 1)
+    }
+
+    func testAFailedTokenReportKeepsTheLimitsAndRetries() async throws {
+        let http = RoutingHTTPClient { request in
+            Self.isTokenReport(request) ? Self.envelope(status: 503, body: "") : Self.envelope(body: Self.usageBody)
+        }
+        let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.codex("codex-a.json")])], http: http)
+
+        let first = await runtime.refresh()
+        _ = await runtime.refresh()
+
+        XCTAssertNotNil(first.lines.first { $0.label == "Weekly" })
+        XCTAssertEqual(http.requests.filter(Self.isTokenReport).count, 2)
+    }
+
     func testLeavesOutTheAccountHeaderWhenTheAccountIDIsUnknown() async throws {
         let http = RoutingHTTPClient { _ in Self.envelope(body: Self.usageBody) }
         let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.codex("codex-a.json")])], http: http)
@@ -90,16 +129,16 @@ final class CLIProxyCodexRuntimeTests: XCTestCase {
         XCTAssertEqual(header["OpenAI-Beta"], "codex-1")
     }
 
-    func testShowsLimitsOnlyWithTheCodexMetricIDs() throws {
+    func testShowsLimitsAndTokensWithTheCodexMetricIDs() throws {
         let runtime = try firstCard(
             hubs: [Self.hub(accounts: [Self.codex("codex-a.json")])], http: RoutingHTTPClient { _ in Self.envelope(body: "{}") }
         )
         let id = runtime.provider.id
 
         XCTAssertEqual(runtime.widgetDescriptors.map(\.id), [
-            "\(id).session", "\(id).weekly", "\(id).spark", "\(id).sparkWeekly", "\(id).credits", "\(id).rateLimitResets"
+            "\(id).session", "\(id).weekly", "\(id).spark", "\(id).sparkWeekly", "\(id).credits", "\(id).rateLimitResets", "\(id).today", "\(id).yesterday", "\(id).last30"
         ])
-        XCTAssertFalse(runtime.widgetDescriptors.contains { $0.isSpendTile || $0.historyResource != nil })
+        XCTAssertFalse(runtime.widgetDescriptors.contains { $0.historyResource != nil })
         // Same suffixes as the local Codex card, so `DefaultLayout.expandingAccounts` gives hub cards
         // the Codex family's defaults.
         let local = Set(CodexProvider().widgetDescriptors.map(\.id))

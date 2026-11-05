@@ -93,7 +93,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
 
         let snapshot = await runtime.refresh()
 
-        XCTAssertEqual(snapshot.plan, "Max 20x")
+        XCTAssertEqual(snapshot.plan, "Ultra")
         XCTAssertNil(errorText(snapshot))
     }
 
@@ -106,7 +106,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         _ = await runtime.refresh()
         let second = await runtime.refresh()
 
-        XCTAssertEqual(second.plan, "Max 20x")
+        XCTAssertEqual(second.plan, "Ultra")
         XCTAssertEqual(http.requests.filter(Self.isProfileCall).count, 1)
     }
 

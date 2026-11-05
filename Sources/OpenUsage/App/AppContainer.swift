@@ -70,7 +70,11 @@ final class AppContainer {
         self.shellEnvironmentSnapshotTask = ShellEnvironmentSnapshotStore(defaults: .standard).startRefreshTask()
         // The launch account pass: which account is signed in at each family's default home. Feeds
         // the snapshot cache's account stamp and reconciles the account registry.
-        let accountAssembly = await ProviderAccountAssembly.make(waitsForLoginShell: true)
+        // Claude and Codex read only from the CLIProxyAPI hub (owner decision): no local logins, Keychain
+        // or log scans. To bring local sessions back, restore the commented lines here and drop
+        // `includesLocalClaudeAndCodex: false` below.
+        // let accountAssembly = await ProviderAccountAssembly.make(waitsForLoginShell: true)
+        let accountAssembly = ProviderAccountAssembly(identityKeysByCard: [:])
         // CLIProxyAPI hub cards come from the account lists cached in the hub config: a local file
         // read, never a hub call, so an unreachable hub can't hold up launch.
         let hubCards = await CLIProxyHubCards.loadRuntimes()
@@ -88,7 +92,8 @@ final class AppContainer {
             claudeIdentityKeys: accountAssembly.identityKeysByCard,
             hubCards: hubCards.claude,
             codexHubCards: hubCards.codex,
-            hiddenLocalCardIDs: CLIProxyHubCards.hiddenLocalCardIDs(local: accountAssembly.localAccounts, hub: hubCards)
+            // hiddenLocalCardIDs: CLIProxyHubCards.hiddenLocalCardIDs(local: accountAssembly.localAccounts, hub: hubCards)
+            includesLocalClaudeAndCodex: false
         )
         let registry = WidgetRegistry.from(providers)
         let apiKeyProviders = providers.compactMap { $0 as? any APIKeyManaging }

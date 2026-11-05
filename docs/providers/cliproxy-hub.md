@@ -1,5 +1,7 @@
 # CLIProxyAPI Hub
 
+Claude and Codex read only from the hub: local logins and logs are off, so without an enabled hub those two providers show no card, and local spend rows (Today, Last 30 Days) are gone. The plan badge on a Claude hub card comes from the account's profile, read through the hub.
+
 Shows the Claude and Codex accounts held by a CLIProxyAPI hub, each as its own account, with live limits read through the hub. On the dashboard they join the other accounts of their family on one merged card (see [Several accounts of one provider](../dashboard.md#several-accounts-of-one-provider)). The hub keeps the account tokens; OpenUsage only ever sends the
 hub's management key.
 

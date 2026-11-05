@@ -59,6 +59,51 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
 
     // MARK: - Limits
 
+    private nonisolated static let profileBody = #"{"account":{"uuid":"a"},"organization":{"uuid":"o","organization_type":"claude_max","rate_limit_tier":"default_claude_max_20x"}}"#
+
+    private nonisolated static func isProfileCall(_ request: HTTPRequest) -> Bool {
+        (payload(request)["url"] as? String)?.hasSuffix("/api/oauth/profile") == true
+    }
+
+    func testShowsThePlanFromTheProfileReadThroughTheHub() async throws {
+        let http = RoutingHTTPClient { request in
+            Self.envelope(body: Self.isProfileCall(request) ? Self.profileBody : Self.usageBody)
+        }
+        let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.claude("claude-a.json")])], http: http)
+
+        let snapshot = await runtime.refresh()
+
+        XCTAssertEqual(snapshot.plan, "Max 20x")
+        XCTAssertNil(errorText(snapshot))
+    }
+
+    func testAKnownPlanIsNotFetchedAgain() async throws {
+        let http = RoutingHTTPClient { request in
+            Self.envelope(body: Self.isProfileCall(request) ? Self.profileBody : Self.usageBody)
+        }
+        let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.claude("claude-a.json")])], http: http)
+
+        _ = await runtime.refresh()
+        let second = await runtime.refresh()
+
+        XCTAssertEqual(second.plan, "Max 20x")
+        XCTAssertEqual(http.requests.filter(Self.isProfileCall).count, 1)
+    }
+
+    func testAFailedPlanLookupKeepsTheLimitsAndRetriesNextRefresh() async throws {
+        let http = RoutingHTTPClient { request in
+            Self.isProfileCall(request) ? Self.envelope(status: 503, body: "") : Self.envelope(body: Self.usageBody)
+        }
+        let runtime = try firstCard(hubs: [Self.hub(accounts: [Self.claude("claude-a.json")])], http: http)
+
+        let first = await runtime.refresh()
+        _ = await runtime.refresh()
+
+        XCTAssertNil(first.plan)
+        XCTAssertNil(errorText(first))
+        XCTAssertEqual(http.requests.filter(Self.isProfileCall).count, 2)
+    }
+
     func testMapsTheAccountsLimitsThroughTheHub() async throws {
         let http = RoutingHTTPClient { _ in Self.envelope(body: Self.usageBody) }
         let runtime = try firstCard(
@@ -186,7 +231,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         let snapshots = await refreshAll(runtimes)
 
         XCTAssertEqual(snapshots.compactMap(errorText), [])
-        XCTAssertEqual(http.requests.count, 10)
+        XCTAssertEqual(http.requests.filter { !Self.isProfileCall($0) }.count, 10)
         let peak = counter.withLock { $0.peak }
         XCTAssertLessThanOrEqual(peak, CLIProxyHubSession.maxConcurrentCalls)
         XCTAssertGreaterThan(peak, 1, "calls should overlap up to the cap")

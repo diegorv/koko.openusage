@@ -52,9 +52,13 @@ public struct UsageReader {
                 _ = LoginShellEnvironment.shared.ensureCaptured()
             }.value
         }
-        let accountAssembly = providersOverride == nil
-            ? await ProviderAccountAssembly.make(defaults: defaults, waitsForLoginShell: false)
-            : ProviderAccountAssembly(identityKeysByCard: [:])
+        // Claude and Codex read only from the CLIProxyAPI hub (owner decision): no local logins, Keychain
+        // or log scans. To bring local sessions back, restore the commented lines here and drop
+        // `includesLocalClaudeAndCodex: false` below.
+        // let accountAssembly = providersOverride == nil
+        //     ? await ProviderAccountAssembly.make(defaults: defaults, waitsForLoginShell: false)
+        //     : ProviderAccountAssembly(identityKeysByCard: [:])
+        let accountAssembly = ProviderAccountAssembly(identityKeysByCard: [:])
         let hubCards = providersOverride == nil ? await CLIProxyHubCards.loadRuntimes() : CLIProxyHubCards.Runtimes()
         let providers = providersOverride ?? ProviderCatalog.make(
             defaults: defaults,
@@ -63,7 +67,8 @@ public struct UsageReader {
             claudeIdentityKeys: accountAssembly.identityKeysByCard,
             hubCards: hubCards.claude,
             codexHubCards: hubCards.codex,
-            hiddenLocalCardIDs: CLIProxyHubCards.hiddenLocalCardIDs(local: accountAssembly.localAccounts, hub: hubCards)
+            // hiddenLocalCardIDs: CLIProxyHubCards.hiddenLocalCardIDs(local: accountAssembly.localAccounts, hub: hubCards)
+            includesLocalClaudeAndCodex: false
         )
         let registry = WidgetRegistry.from(providers)
         let knownIDs = Set(registry.providers.map(\.id))

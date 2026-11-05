@@ -141,6 +141,12 @@ final class AccountSlotsTests: XCTestCase {
         XCTAssertFalse(partial.accountsReadAlike, "an account with no data must stay visible")
     }
 
+    func testAllAccountsLineUsesTheSoonestReset() {
+        let data = merged(percent(0, resetsIn: 110), percent(0, resetsIn: 74))
+
+        XCTAssertEqual(data.allAccountsSummary(now: now), "All Accounts · 3d 2h")
+    }
+
     func testSingleAccountRowIsUnchanged() {
         let data = WidgetData.merging([AccountReading(account: me, data: percent(36, resetsIn: 110))])
 

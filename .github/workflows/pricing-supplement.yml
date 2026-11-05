@@ -1,6 +1,6 @@
 # Publishes the pricing supplement to GitHub Pages whenever it changes on main.
 #
-# Installed apps fetch https://robinebers.github.io/openusage/pricing_supplement.json on their daily
+# Installed apps fetch https://diegorv.github.io/openusage/pricing_supplement.json on their daily
 # pricing refresh, so merging a change to the supplement updates Cursor-native model pricing (auto,
 # composer-*, github_bugbot), fast multipliers, and model alias rules in the field within ~a day —
 # no tag, no release, no Sparkle involvement.

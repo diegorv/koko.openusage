@@ -9,22 +9,13 @@ import Observation
 @Observable
 final class OnboardingStore {
     private static let customizeHintPendingKey = "openusage.onboarding.customizeHintPending"
-    private static let newVersionNoticeDismissedKey = "openusage.notices.newVersionDismissed"
 
     private(set) var isCustomizeHintPending: Bool
-    private(set) var isNewVersionNoticeDismissed: Bool
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         self.isCustomizeHintPending = defaults.bool(forKey: Self.customizeHintPendingKey)
-        self.isNewVersionNoticeDismissed = defaults.bool(forKey: Self.newVersionNoticeDismissedKey)
-    }
-
-    func dismissNewVersionNotice() {
-        guard !isNewVersionNoticeDismissed else { return }
-        isNewVersionNoticeDismissed = true
-        defaults.set(true, forKey: Self.newVersionNoticeDismissedKey)
     }
 
     func markCustomizeHintPending() {

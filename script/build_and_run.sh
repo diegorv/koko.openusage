@@ -5,13 +5,14 @@ set -euo pipefail
 # to /Applications. The dev build:
 #   - is signed with a stable Apple Development identity, so keychain/permission grants stick across
 #     rebuilds (macOS keys those to the signing identity + bundle id, not the install location);
-#   - uses its own bundle id (com.robinebers.openusage.dev), so it never touches the real installed
+#   - uses its own bundle id (com.diegorv.openusage.dev), so it never touches the real installed
 #     app's settings or keychain. To run against the real app's data instead, set BUNDLE_ID to
-#     com.robinebers.openusage below;
+#     com.diegorv.openusage below;
 #   - ships no Sparkle feed, so it never checks for or installs updates (test updates with a real
 #     signed + notarized release build — that's the only honest way).
 #
-# Usage: script/build_and_run.sh [run|build|logs|verify]
+# Usage: script/build_and_run.sh [run|build|logs|verify|install]
+#   install  builds under the real bundle id, copies to /Applications, and launches it there
 # Env:   CODESIGN_IDENTITY  override signing identity (exact name or hash)
 #        CONFIG             "release" (default) or "debug"
 
@@ -20,10 +21,17 @@ CONFIG="${CONFIG:-release}"
 
 TARGET_NAME="OpenUsage"                 # SwiftPM target / binary name
 APP_DISPLAY="OpenUsage"                 # user-facing app name
-BUNDLE_ID="${BUNDLE_ID:-com.robinebers.openusage.dev}"
+if [ "$MODE" = "install" ]; then
+  BUNDLE_ID="com.diegorv.openusage"
+else
+  BUNDLE_ID="${BUNDLE_ID:-com.diegorv.openusage.dev}"
+fi
 MIN_SYSTEM_VERSION="15.0"
-APP_VERSION="0.7.0"
-APP_BUILD="0.7.0"
+APP_VERSION="1.0.0"
+APP_BUILD="1.0.0"
+# A dev build says so in its footer; an installed build shows the plain version.
+SHORT_VERSION="$APP_VERSION-dev"
+[ "$MODE" = "install" ] && SHORT_VERSION="$APP_VERSION"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist"
@@ -129,7 +137,7 @@ cat >"$INFO_PLIST" <<PLIST
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
-  <string>$APP_VERSION-dev</string>
+  <string>$SHORT_VERSION</string>
   <key>CFBundleVersion</key>
   <string>$APP_BUILD</string>
   <key>LSMinimumSystemVersion</key>
@@ -182,6 +190,12 @@ case "$MODE" in
     launch_app
     echo "==> launched $APP_DISPLAY (dist/$APP_DISPLAY.app)"
     ;;
+  install)
+    rm -rf "/Applications/$APP_DISPLAY.app"
+    /usr/bin/ditto "$APP_BUNDLE" "/Applications/$APP_DISPLAY.app"
+    /usr/bin/open -n "/Applications/$APP_DISPLAY.app"
+    echo "==> installed and launched /Applications/$APP_DISPLAY.app"
+    ;;
   build)
     : # build + stage + sign only
     ;;
@@ -195,7 +209,7 @@ case "$MODE" in
     pgrep -x "$TARGET_NAME" >/dev/null && echo "==> running"
     ;;
   *)
-    echo "usage: $0 [run|build|logs|verify]" >&2
+    echo "usage: $0 [run|build|logs|verify|install]" >&2
     exit 2
     ;;
 esac

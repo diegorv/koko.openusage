@@ -45,7 +45,7 @@ enum CLIProxyHubError: Error, LocalizedError, Equatable {
         case .untrustedCertificate:
             "The CLIProxyAPI hub's certificate isn't trusted. Use a hub with a trusted certificate."
         case .invalidResponse:
-            "The CLIProxyAPI hub sent a response OpenUsage can't read."
+            "The CLIProxyAPI hub sent a response koko.openusage can't read."
         }
     }
 }

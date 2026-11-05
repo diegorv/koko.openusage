@@ -62,7 +62,7 @@ struct CLIProxyHubSettingsSection: View {
             Button("Remove", role: .destructive) { settings.remove(hubID: hub.id) }
             Button("Cancel", role: .cancel) {}
         } message: { hub in
-            Text("\(name(of: hub)) and its saved management key are removed from OpenUsage. The hub itself is not changed.")
+            Text("\(name(of: hub)) and its saved management key are removed from koko.openusage. The hub itself is not changed.")
         }
     }
 
@@ -122,7 +122,7 @@ struct CLIProxyHubSettingsSection: View {
 
     private var relaunchRow: some View {
         HStack(spacing: 10) {
-            Text(notice.relaunchFailed ? "Quit and reopen OpenUsage to apply." : "Relaunch to apply hub changes.")
+            Text(notice.relaunchFailed ? "Quit and reopen koko.openusage to apply." : "Relaunch to apply hub changes.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Spacer(minLength: 8)

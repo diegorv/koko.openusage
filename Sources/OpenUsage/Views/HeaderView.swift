@@ -106,15 +106,15 @@ struct HeaderView: View {
 
         Divider()
 
-        Link(destination: URL(string: "https://github.com/diegorv/openusage/issues/new/choose")!) {
+        Link(destination: URL(string: "https://github.com/diegorv/koko.openusage/issues/new/choose")!) {
             Label("Report an Issue…", systemImage: "ladybug")
         }
 
         Button { AboutPanel.present() } label: {
-            Label("About OpenUsage", systemImage: "info.circle")
+            Label("About koko.openusage", systemImage: "info.circle")
         }
         Button(role: .destructive) { NSApplication.shared.terminate(nil) } label: {
-            Label("Quit OpenUsage", systemImage: "power")
+            Label("Quit koko.openusage", systemImage: "power")
         }
         .keyboardShortcut("q") // ⌘Q — unowned elsewhere, so safe to register on the item.
     }

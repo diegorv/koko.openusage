@@ -105,7 +105,7 @@ struct SettingsScreen: View {
             row("Global Shortcut") {
                 ShortcutRecorderField(name: .togglePopover, isVisible: layout.screen == .settings)
                     .id(shortcutFieldGeneration)
-                    .hoverTooltip("Open OpenUsage from anywhere")
+                    .hoverTooltip("Open koko.openusage from anywhere")
             }
         }
     }
@@ -255,8 +255,8 @@ struct SettingsScreen: View {
                         .font(.caption)
                         .foregroundStyle(.orange)
                         .hoverTooltip(notificationsAuth == .denied
-                            ? "Notifications are turned off for OpenUsage. Enable them in System Settings."
-                            : "OpenUsage needs permission to send alerts.")
+                            ? "Notifications are turned off for koko.openusage. Enable them in System Settings."
+                            : "koko.openusage needs permission to send alerts.")
                 }
             }
             .padding(.horizontal, 8)
@@ -363,7 +363,7 @@ struct SettingsScreen: View {
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
             if commandLineTool.status == .conflict {
-                inlineNotice("\(commandLineTool.destinationPath) already exists and wasn't installed by OpenUsage.")
+                inlineNotice("\(commandLineTool.destinationPath) already exists and wasn't installed by koko.openusage.")
             } else if let errorMessage = commandLineTool.errorMessage {
                 inlineNotice(errorMessage)
             }

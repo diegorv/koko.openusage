@@ -105,8 +105,6 @@ extension WidgetDescriptor {
             .combined(id: "\(provider.id).yesterday", provider: provider, title: "Yesterday", isUsagePeriod: true),
             .combined(id: "\(provider.id).last30", provider: provider, title: "Last 30 Days", isUsagePeriod: true)
         ]
-        // Mark the whole set as the local spend tiles — the Total Spend card's capability and
-        // contribution signal.
         return descriptors.map { descriptor in
             var sample = descriptor.sample
             sample.valueTooltipNote = valueTooltipNote
@@ -116,7 +114,6 @@ extension WidgetDescriptor {
                 metricLabel: descriptor.metricLabel,
                 sample: sample,
                 pinnable: descriptor.pinnable,
-                isSpendTile: true,
                 limitResources: descriptor.limitResources,
                 historyResource: descriptor.historyResource
             )

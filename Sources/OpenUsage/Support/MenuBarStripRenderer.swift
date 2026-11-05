@@ -163,7 +163,7 @@ struct GaugeColors: Equatable {
         if metric.usedFraction >= 0.80 { return Color(red: 224 / 255, green: 160 / 255, blue: 48 / 255) }
         switch mode {
         case .monochrome, .alertsOnly: return nil
-        case .provider: return TotalSpendPalette.color(for: providerID)
+        case .provider: return ProviderPalette.color(for: providerID)
         case .custom:
             return Color(
                 red: Double((custom >> 16) & 0xFF) / 255,

@@ -50,6 +50,11 @@ final class CLIProxyCodexRuntime: CLIProxyHubCard {
         do {
             let mapped = try CodexUsageMapper.mapUsageResponse(response, now: now())
             var lines = mapped.lines
+            // A zero balance says nothing, so its row hides until there are credits.
+            lines.removeAll { line in
+                guard line.label == "Credits", case .values(_, let values, _, _, _, _) = line else { return false }
+                return values.allSatisfy { $0.number == 0 }
+            }
             await loadTokenHistoryIfNeeded()
             if let tokenHistory {
                 SpendTileMapper.appendTokenUsage(tokenHistory, to: &lines, now: now(), estimated: false)

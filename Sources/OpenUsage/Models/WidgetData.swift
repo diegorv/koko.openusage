@@ -503,6 +503,8 @@ extension WidgetData {
     func meterState(now: Date = Date()) -> MeterState {
         guard hasData, let limit, limit > 0 else { return hasData ? .level(.normal) : .noData }
         if roundedAtDisplayPrecision(limit - used) <= 0 { return .spent }
+        // Accounts' windows start at different times, so a combined burn rate has no honest projection.
+        if showsAccountSlots { return absoluteLevelState(used: used, limit: limit) }
         // A "Not started" session has nothing to pace yet — present a calm bar with no projection
         // copy or tick, so the bar and its hover never contradict the trailing "Not started" label.
         if isFreshSessionWindow(now: now) { return absoluteLevelState(used: used, limit: limit) }

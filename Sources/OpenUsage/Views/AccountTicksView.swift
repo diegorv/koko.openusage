@@ -43,7 +43,7 @@ extension View {
     /// Lays a merged row's account ticks over its meter; a no-op for rows without ticks.
     func accountTicksOverlay(_ data: WidgetData, meterHeight: CGFloat) -> some View {
         overlay {
-            if data.hasData, !data.accountTicks.isEmpty {
+            if data.hasData, data.showsAccountTicks {
                 AccountTicksView(ticks: data.accountTicks, displayMode: data.displayMode, meterHeight: meterHeight)
             }
         }

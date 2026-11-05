@@ -6,14 +6,14 @@
 
 **Status:** ready-for-agent
 
-- [ ] The bar is split into one equal slot per account, each filled to that account's own value in its `AccountColors` color. An account without the metric gets no slot.
-- [ ] The row header shows the combined value, the average of the accounts' values.
-- [ ] Under the bar, one line per account shows its color dot, short name, its value and its own reset.
-- [ ] Merged percent rows drop the ticks, the card legend and the pace projection ("Limit in …"), and the code those changes orphan is removed.
-- [ ] Money, count and chart rows, and single-account cards, render as before.
-- [ ] The menu bar item keeps the combined value.
-- [ ] Tests (test-first) cover: the account values kept for the slots and lines, each account's own reset, an account missing a metric, and a single-account family unchanged.
-- [ ] `docs/dashboard.md` and `docs/menu-bar.md` describe the new row.
+- [x] The bar is split into one equal slot per account, each filled to that account's own value in its `AccountColors` color. An account without the metric gets no slot.
+- [x] The row header shows the combined value, the average of the accounts' values.
+- [x] Under the bar, one line per account shows its color dot, short name, its value and its own reset.
+- [x] Merged percent rows drop the ticks, the card legend and the pace projection ("Limit in …"), and the code those changes orphan is removed.
+- [x] Money, count and chart rows, and single-account cards, render as before.
+- [x] The menu bar item keeps the combined value.
+- [x] Tests (test-first) cover: the account values kept for the slots and lines, each account's own reset, an account missing a metric, and a single-account family unchanged.
+- [x] `docs/dashboard.md` and `docs/menu-bar.md` describe the new row.
 - [ ] A screenshot of a merged Claude card is ready for the PR.
 
 ## Decisions (owner, 2026-11-05)

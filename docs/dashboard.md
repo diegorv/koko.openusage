@@ -27,7 +27,7 @@ When two or more Claude accounts are on (local logins, Claude Swap, or CLIProxyA
 - Money and count rows (Today, Last 30 Days, credits) show the sum across the accounts. The reset is the soonest one. Those with a limit keep one bar with a thin colored tick per account, and a small key names each account's color.
 - An account that doesn't report a metric is left out of that row's average and gets no slot.
 - The Rate Limit Resets popover lists every account's resets but has no **Use** button, since one click can't tell which account to spend. To use a reset, turn the other accounts off so that account has its own card again.
-- With only one account on, the card looks just like a normal card: no slots, ticks or key.
+- With only one account on, the card looks just like a normal card: no slots, ticks or key. A lone CLIProxyAPI hub account is the exception: it keeps the family name and the account line, so its card looks the same when a second account arrives.
 
 The merged card uses the first account's metric settings (the plain **Claude** or **Codex** entry in Customize): which metrics show, their order, and Always Visible / On Demand. Turning an account off in Customize removes it from the merged card. Hiding or refreshing the card from its header acts on every account in it.
 

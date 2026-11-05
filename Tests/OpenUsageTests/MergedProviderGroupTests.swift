@@ -46,6 +46,22 @@ final class MergedProviderGroupTests: XCTestCase {
         group?.widgets.compactMap { store.descriptor(for: $0)?.id }
     }
 
+    func testALoneHubAccountShowsLikeAMergedCard() {
+        let hub = Provider(id: "claude@ab12cd34", displayName: "Claude: eu@example.com (Hub lab)",
+                           icon: .providerMark("claude"), showsAsFamily: true)
+        let group = layout([hub]).displayGroups.first
+
+        XCTAssertEqual(group?.provider.displayName, "Claude")
+        XCTAssertEqual(group?.accounts.map(\.shortName), ["eu"])
+    }
+
+    func testALoneLocalAccountKeepsItsOrdinaryCard() {
+        let group = layout([work]).displayGroups.first
+
+        XCTAssertEqual(group?.provider.displayName, "Claude: work@example.com")
+        XCTAssertEqual(group?.accounts, [])
+    }
+
     func testTwoAccountsOfAFamilyShowAsOneCard() {
         let store = layout([work, home, cursor])
         let groups = store.displayGroups

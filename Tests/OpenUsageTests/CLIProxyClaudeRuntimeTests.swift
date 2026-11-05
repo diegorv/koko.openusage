@@ -72,6 +72,7 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
                 XCTAssertEqual(provider.links.first { $0.label == "Dashboard" }?.url,
                                "https://hub.example.ts.net:8317/management.html#/auth-files")
                 XCTAssertEqual(provider.links.count, 2, "Status stays")
+                XCTAssertTrue(provider.showsAsFamily)
             }
         }
     }

@@ -75,6 +75,13 @@ final class AccountSlotsTests: XCTestCase {
         XCTAssertEqual(data.accountRows.map(\.data.fraction), [0.62, 0.27])
     }
 
+    func testALoneAccountOnAFamilyCardGetsASlotAndNoPace() {
+        let data = WidgetData.soloAccount(AccountReading(account: me, data: percent(95, resetsIn: 110)))
+
+        XCTAssertEqual(data.accountRows.map(\.account), [me])
+        XCTAssertEqual(data.meterState(now: now), .level(.critical))
+    }
+
     func testSingleAccountRowIsUnchanged() {
         let data = WidgetData.merging([AccountReading(account: me, data: percent(36, resetsIn: 110))])
 

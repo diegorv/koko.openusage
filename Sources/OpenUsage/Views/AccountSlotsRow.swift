@@ -10,7 +10,18 @@ struct AccountSlotsRow: View {
 
     private static let slotSpacing: CGFloat = 3
 
-    private var rows: [(account: MergedAccount, data: WidgetData)] { data.accountRows }
+    /// Every account in its card order; one with no readings has no row and keeps an empty slot.
+    private var slots: [(account: MergedAccount, row: WidgetData?)] {
+        let reading = data.accountRows.map { (account: $0.account, row: Optional($0.data)) }
+        let missing = data.unavailableAccounts.map { (account: $0, row: WidgetData?.none) }
+        return (reading + missing).sorted { $0.account.colorIndex < $1.account.colorIndex }
+    }
+
+    /// The combined value leaves unavailable accounts out, so it says so.
+    private var combinedText: String {
+        let missing = data.unavailableAccounts.count
+        return missing == 0 ? data.boundedHeadline : "\(data.boundedHeadline) · \(missing) missing"
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: density.rowInnerSpacing) {
@@ -24,15 +35,15 @@ struct AccountSlotsRow: View {
             .lineLimit(1)
 
             HStack(spacing: Self.slotSpacing) {
-                ForEach(rows, id: \.account.providerID) { row in
-                    slot(row.account, fraction: row.data.fraction)
+                ForEach(slots, id: \.account.providerID) { slot in
+                    self.slot(slot.account, fraction: slot.row?.fraction ?? 0)
                 }
             }
             .frame(height: density.meterHeight)
             .accessibilityHidden(true)
 
-            ForEach(rows, id: \.account.providerID) { row in
-                accountLine(row.account, row.data)
+            ForEach(slots, id: \.account.providerID) { slot in
+                accountLine(slot.account, slot.row)
             }
         }
     }
@@ -40,7 +51,7 @@ struct AccountSlotsRow: View {
     /// Bars carry account colors, so the low-quota signal lives on this number.
     @ViewBuilder
     private var combinedValue: some View {
-        let label = Text(data.boundedHeadline).foregroundStyle(valueStyle)
+        let label = Text(combinedText).foregroundStyle(valueStyle)
         if let onToggleMeterStyle {
             Button(action: onToggleMeterStyle) { label }
                 .buttonStyle(.plain)
@@ -71,7 +82,7 @@ struct AccountSlotsRow: View {
         }
     }
 
-    private func accountLine(_ account: MergedAccount, _ row: WidgetData) -> some View {
+    private func accountLine(_ account: MergedAccount, _ row: WidgetData?) -> some View {
         HStack(spacing: 5) {
             Circle()
                 .fill(AccountColors.color(account.colorIndex))
@@ -80,7 +91,7 @@ struct AccountSlotsRow: View {
                 .foregroundStyle(.primary)
                 .truncationMode(.tail)
             Spacer(minLength: 8)
-            Text(([row.boundedHeadline] + [row.resetLabel].compactMap { $0 }).joined(separator: " · "))
+            Text(row.map { ([$0.boundedHeadline] + [$0.resetLabel].compactMap { $0 }).joined(separator: " · ") } ?? "No data")
                 .foregroundStyle(.secondary)
                 .layoutPriority(1)
         }

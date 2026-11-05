@@ -82,6 +82,38 @@ final class AccountSlotsTests: XCTestCase {
         XCTAssertEqual(data.meterState(now: now), .level(.critical))
     }
 
+    func testAnAccountWithNoReadingsStaysVisibleAndMarksTheTotal() {
+        var failed = percent(0, resetsIn: 74)
+        failed.hasData = false
+        let data = WidgetData.merging([
+            AccountReading(account: me, data: percent(37, resetsIn: 110)),
+            AccountReading(account: leo, data: failed, isUnavailable: true)
+        ])
+
+        XCTAssertEqual(data.used, 37)
+        XCTAssertEqual(data.accountRows.map(\.account), [me])
+        XCTAssertEqual(data.unavailableAccounts, [leo])
+        XCTAssertEqual(data.anonymizingAccounts().unavailableAccounts.map(\.shortName), ["Account 2"])
+    }
+
+    func testAnAccountLackingOnlyThisMetricIsNotUnavailable() {
+        var missing = percent(0, resetsIn: 74)
+        missing.hasData = false
+
+        XCTAssertEqual(merged(percent(37, resetsIn: 110), missing).unavailableAccounts, [])
+    }
+
+    func testAllAccountsUnavailableStaysNoData() {
+        var failed = percent(0, resetsIn: 74)
+        failed.hasData = false
+        let data = WidgetData.merging([
+            AccountReading(account: me, data: failed, isUnavailable: true),
+            AccountReading(account: leo, data: failed, isUnavailable: true)
+        ])
+
+        XCTAssertFalse(data.hasData)
+    }
+
     func testSingleAccountRowIsUnchanged() {
         let data = WidgetData.merging([AccountReading(account: me, data: percent(36, resetsIn: 110))])
 

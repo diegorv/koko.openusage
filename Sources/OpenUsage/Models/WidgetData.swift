@@ -108,6 +108,8 @@ struct WidgetData: Hashable {
     var chartNote: String?
     /// One tick per account on a merged card's bar (see `WidgetData.merging`). Empty on a normal row.
     var accountTicks: [AccountTick] = []
+    /// Accounts on a merged card with no readings right now, so the combined value leaves them out.
+    var unavailableAccounts: [MergedAccount] = []
 
     var isBounded: Bool { limit != nil }
 

@@ -7,9 +7,6 @@
 - The Dashboard and Settings footer shows `Next update in Nm`. **Clicking it (or pressing ⌘R while that footer is present)** refreshes immediately, skipping the cache.
 - The one-shot `openusage` command reuses this same persisted cache for ten minutes, refreshes missing or stale entries without starting the app, and exits. `openusage --force` runs the same forced provider refresh as ⌘R regardless of cache age.
 - While a provider is fetching, a small spinner appears next to its name (and one shows in the footer beside the countdown), so you can tell a refresh is in flight rather than wondering if the numbers are stale.
-- With [iCloud Sync](icloud-sync.md) on, a refresh batch writes one machine-history file after the whole
-  batch finishes. Manual provider refreshes write after that provider finishes, and adjacent changes are
-  debounced into one write.
 
 ## Caching
 
@@ -47,8 +44,7 @@ a healthy provider on a slow network can legitimately take over a minute, and it
 slow, not as broken.
 
 The last good normalized history is preserved too, so a temporary provider failure—or a successful
-limit refresh whose local log scan is temporarily unavailable—does not remove this Mac's previous
-contribution from an iCloud-combined spend total.
+limit refresh whose local log scan is temporarily unavailable—does not remove the previous spend totals.
 
 Rows that have never had data show "No data" rather than made-up numbers.
 

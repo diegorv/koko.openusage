@@ -56,7 +56,7 @@ struct ProviderSnapshotCache {
         // once so the warning shows immediately instead of after the cached snapshot expires.
         // v7: spend `.values` rows gained `modelBreakdown` for the per-model hover panel. Old payloads
         // decode cleanly without it, but the bump fetches fresh snapshots so hover panels appear right away.
-        // v8: provider snapshots gained normalized daily history for iCloud aggregation. Refetch on
+        // v8: provider snapshots gained normalized daily history. Refetch on
         // upgrade so enabling sync can publish a complete first document immediately.
         // v9: entries gained a `producedByIdentityKeys` sidecar (which account produced each snapshot),
         // so a launch after an account swap at the same home can discard the previous account's cached

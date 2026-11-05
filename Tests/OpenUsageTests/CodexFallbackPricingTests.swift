@@ -221,22 +221,20 @@ final class CodexFallbackPricingTests: XCTestCase {
         )
         let local = ProviderSnapshot(providerID: "codex", displayName: "Codex", lines: [])
         let descriptor = UsageHistoryDescriptor(scope: .machineLocal, estimatedCost: true, sourceNote: "logs")
-        for combined in [false, true] {
-            let rendered = UsageHistorySnapshotRenderer.render(
-                local: local, history: history, descriptor: descriptor, now: now, combined: combined
-            )
-            let baseNote = combined ? "Across your Macs · logs" : "logs"
-            for label in ["Today", "Yesterday", "Last 30 Days"] {
-                guard case .values(_, _, _, _, _, let breakdown) = rendered.lines.first(where: { $0.label == label }) else {
-                    return XCTFail("Missing spend row")
-                }
-                XCTAssertEqual(breakdown?.sourceNote, label == "Today" ? baseNote : baseNote + " · Fallback estimates: GPT 5.6 Sol")
+        let rendered = UsageHistorySnapshotRenderer.render(
+            local: local, history: history, descriptor: descriptor, now: now
+        )
+        let baseNote = "logs"
+        for label in ["Today", "Yesterday", "Last 30 Days"] {
+            guard case .values(_, _, _, _, _, let breakdown) = rendered.lines.first(where: { $0.label == label }) else {
+                return XCTFail("Missing spend row")
             }
-            guard case .chart(_, _, let note) = rendered.lines.first(where: { $0.label == "Usage Trend" }) else {
-                return XCTFail("Missing usage trend")
-            }
-            XCTAssertEqual(note, baseNote + " · Fallback estimates: GPT 5.6 Sol")
+            XCTAssertEqual(breakdown?.sourceNote, label == "Today" ? baseNote : baseNote + " · Fallback estimates: GPT 5.6 Sol")
         }
+        guard case .chart(_, _, let note) = rendered.lines.first(where: { $0.label == "Usage Trend" }) else {
+            return XCTFail("Missing usage trend")
+        }
+        XCTAssertEqual(note, baseNote + " · Fallback estimates: GPT 5.6 Sol")
     }
 
     func testMergedScansKeepFallbackProvenance() throws {

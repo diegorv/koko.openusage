@@ -210,7 +210,6 @@ final class KeychainAccessorTests: XCTestCase {
 
         for service in [
             "Claude Code-credentials", "gh:github.com", "cursor-access-token", "cursor-refresh-token", "gemini",
-            "com.robinebers.openusage.icloud-sync-device-id.v1",
         ] {
             XCTAssertEqual(try accessor.readGenericPassword(service: service), "security", service)
         }

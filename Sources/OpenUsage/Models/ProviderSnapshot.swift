@@ -7,8 +7,7 @@ struct ProviderSnapshot: Hashable, Sendable, Codable {
     var plan: String?
     var lines: [MetricLine]
     var refreshedAt: Date
-    /// Raw normalized daily history used to build spend rows. This always belongs to this Mac; peer
-    /// history is combined only in the in-memory rendered view and is never written into the cache.
+    /// Raw normalized daily history used to build spend rows.
     var usageHistory: ProviderUsageHistory?
     /// A soft, non-blocking notice carried on a *successful* snapshot — e.g. Claude's "Re-login for live
     /// usage" when the saved login lacks the `user:profile` scope. Distinct from `errorCategory` (which is
@@ -16,7 +15,7 @@ struct ProviderSnapshot: Hashable, Sendable, Codable {
     /// surfaces as the provider header's amber triangle rather than blanking the provider. Cached with the
     /// snapshot; cleared on the next refresh when the condition resolves.
     var warning: String?
-    /// Set only on error snapshots: a stable, non-PII bucket for the failure, read by telemetry on the
+    /// Set only on error snapshots: a stable, non-PII bucket for the failure, read on the
     /// failure path. Always `nil` on success (and error snapshots aren't cached), so it never persists.
     var errorCategory: ErrorCategory?
 
@@ -67,7 +66,7 @@ struct ProviderSnapshot: Hashable, Sendable, Codable {
     }
 
     /// Build an error snapshot straight from a caught error: the badge text stays the error's
-    /// user-facing `localizedDescription` (UI copy is unchanged), and the telemetry category is derived
+    /// user-facing `localizedDescription` (UI copy is unchanged), and the category is derived
     /// from the error's `CategorizedError` conformance (falling back to `.other` for anything that
     /// doesn't classify itself). Preferred over `error(provider:message:)` wherever an `Error` is in hand.
     static func error(provider: Provider, error: Error) -> ProviderSnapshot {

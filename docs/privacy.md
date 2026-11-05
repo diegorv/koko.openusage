@@ -22,10 +22,7 @@ To avoid re-reading unchanged Claude, Codex, and pi logs after every relaunch, O
 parsed usage events in `~/Library/Application Support/OpenUsage/log-scan-cache/`. These records contain
 the usage metadata needed for local totals, including any per-event cost already recorded by a provider,
 but not raw JSONL lines or conversation text. They are private to your macOS account and are never sent
-to a provider or iCloud. Old source-file records are dropped as the scan window advances, and
+to a provider. Old source-file records are dropped as the scan window advances, and
 identity caches that have not been used for 35 days are removed. OpenUsage's pricing engine runs after
 the cache is read, so its computed aggregates and totals are not persisted in this cache.
 
-If you explicitly turn on [iCloud Sync](icloud-sync.md), OpenUsage writes normalized daily tokens,
-spend, and model totals to its private iCloud container so your own Macs can show one combined summary.
-Credentials, account limits, provider responses, and raw logs are never written there.

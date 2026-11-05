@@ -54,7 +54,6 @@ struct SettingsScreen: View {
         // Same section rhythm as the dashboard and Customize (all read the density setting).
         VStack(alignment: .leading, spacing: density.sectionSpacing) {
             generalSection
-            ICloudSyncSettingsSection(sync: container.iCloudSync)
             CLIProxyHubSettingsSection(notice: container.hubRelaunchNotice)
             appearanceSection
             usageDisplaySection
@@ -434,7 +433,7 @@ struct SettingsScreen: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("Restores every setting and customization to its default and turns providers back on for the tools you have installed. If iCloud sync is on, it turns off and this Mac's synced history is removed. This cannot be undone.")
+                Text("Restores every setting and customization to its default and turns providers back on for the tools you have installed. This cannot be undone.")
             }
         }
     }

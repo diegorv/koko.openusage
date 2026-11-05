@@ -304,31 +304,6 @@ final class CLIProxyClaudeRuntimeTests: XCTestCase {
         )
     }
 
-    /// Hub cards keep no history, so they don't make the local Claude card one of several: its
-    /// unowned machine-local history still syncs as before.
-    func testHubCardsDoNotDropTheLocalClaudeHistoryFromSync() {
-        let defaults = makeScratchDefaults("CLIProxyHubHistory")
-        let local = ClaudeProvider.makeProvider(id: "claude", displayName: "Claude")
-        let hubCards = CLIProxyHubCards.runtimes(
-            hubs: [Self.hub(accounts: [Self.claude("claude-a.json")])], http: RoutingHTTPClient { _ in Self.envelope(body: "{}") }
-        ).claude
-        let cache = ProviderSnapshotCache(userDefaults: defaults, storageKey: "snapshots")
-        let history = ProviderUsageHistory(series: DailyUsageSeries(daily: [
-            DailyUsageEntry(date: "2026-07-13", totalTokens: 10, costUSD: 1)
-        ]))
-        cache.store(ProviderSnapshot(providerID: "claude", displayName: "Claude", lines: [], usageHistory: history))
-        let descriptors = [
-            WidgetDescriptor.usageTrend(provider: local).exportingHistory(scope: .machineLocal, estimatedCost: true, sourceNote: "logs")
-        ] + hubCards.flatMap(\.widgetDescriptors)
-
-        let document = WidgetDataStore(
-            registry: WidgetRegistry(providers: [local] + hubCards.map(\.provider), descriptors: descriptors),
-            providers: [], cache: cache, defaults: defaults
-        ).localHistoryDocument(deviceID: "this-mac", deviceName: "This Mac")
-
-        XCTAssertNotNil(document.providers["claude"])
-    }
-
     func testLaunchWithTheHubUnreachableStillBuildsTheCachedCardsWithoutTheNetwork() async throws {
         let defaults = makeScratchDefaults("CLIProxyHubLaunch")
         let files = FakeFiles()

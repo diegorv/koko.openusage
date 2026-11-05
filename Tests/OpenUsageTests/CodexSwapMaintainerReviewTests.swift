@@ -50,38 +50,6 @@ final class CodexSwapMaintainerReviewTests: XCTestCase {
             #"{"plan_type":"pro","rate_limit":{"primary_window":{"used_percent":17,"limit_window_seconds":18000}}}"#.utf8))
     }
 
-    func testCodexAccountExportOmitsUnresolvedClaudeWithoutBlockingOtherProviders() throws {
-        let defaults = try defaults()
-        let providers = [ClaudeProvider().provider, CodexProvider.makeProvider(), GrokProvider().provider]
-        let descriptors = providers.map {
-            WidgetDescriptor.usageTrend(provider: $0)
-                .exportingHistory(scope: .machineLocal, estimatedCost: true, sourceNote: "logs")
-        }
-        let registry = WidgetRegistry(providers: providers, descriptors: descriptors)
-        let cache = ProviderSnapshotCache(userDefaults: defaults, storageKey: "cache")
-        let history = ProviderUsageHistory(series: DailyUsageSeries(daily: [
-            DailyUsageEntry(date: DailyUsageAccumulator.dayKey(from: Date()), totalTokens: 123, costUSD: 1)
-        ]))
-        for model in providers {
-            cache.store(.init(providerID: model.id, displayName: model.displayName,
-                              lines: [], usageHistory: history),
-                        producedByIdentityKey: model.id == "codex" ? a.key : nil)
-        }
-        let store = WidgetDataStore(registry: registry, providers: [], cache: cache, defaults: defaults,
-                                    providerIdentityKeys: ["codex": a.key])
-        let document = store.localHistoryDocument(deviceID: "test", deviceName: "Test")
-        XCTAssertNoThrow(try document.validate())
-        XCTAssertNotNil(document.providers["codex"])
-        XCTAssertNotNil(document.providers["grok"])
-        XCTAssertNil(document.providers["claude"])
-
-        let legacy = WidgetDataStore(registry: registry, providers: [], cache: cache, defaults: defaults)
-            .localHistoryDocument(deviceID: "legacy", deviceName: "Legacy")
-        XCTAssertEqual(legacy.schema, UsageHistoryDocument.currentSchema)
-        XCTAssertNotNil(legacy.providers["claude"])
-        XCTAssertNoThrow(try legacy.validate())
-    }
-
     func testKeychainOnlyDefaultGetsItsOwnStableCardBesideSwap() async throws {
         let files = files()
         let keychain = BackgroundCheckingKeychain(CodexSwapAccountTests.credential(a, token: "keychain-personal"))

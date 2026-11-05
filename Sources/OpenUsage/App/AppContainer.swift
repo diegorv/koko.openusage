@@ -10,8 +10,6 @@ final class AppContainer {
     let registry: WidgetRegistry
     let layout: LayoutStore
     let dataStore: WidgetDataStore
-    /// Opt-in private iCloud document sync for additive machine-local daily history.
-    let iCloudSync: ICloudUsageSyncStore
     /// Single source of truth for which providers the user has turned off. Both stores consult it (via
     /// injected closures) and the Customize provider list drives it.
     let enablement: ProviderEnablementStore
@@ -110,13 +108,11 @@ final class AppContainer {
             notificationSettings: { notificationSettings },
             providerIdentityKeys: accountAssembly.identityKeysByCard
         )
-        let iCloudSync = ICloudUsageSyncStore(dataStore: dataStore)
         // Re-enabling a provider should fetch it promptly, so clear any leftover failure backoff before
         // the enablement wake refreshes. `weak` breaks the cycle (dataStore already captures enablement).
         enablement.onProviderEnabled = { [weak dataStore] id in dataStore?.clearFailureBackoff(for: id) }
-        enablement.onChange = { [weak dataStore, weak iCloudSync] in
+        enablement.onChange = { [weak dataStore] in
             dataStore?.providerEnablementDidChange()
-            iCloudSync?.scheduleWrite()
         }
         // Fresh installs start with nothing on; the welcome screen turns on the user's picks. No-op on
         // every later launch.
@@ -143,7 +139,6 @@ final class AppContainer {
         self.notificationSettings = notificationSettings
         self.layout = layout
         self.dataStore = dataStore
-        self.iCloudSync = iCloudSync
 
         // The resets popover's claim services, sharing each provider's credential loading and HTTP
         // client so the claim's auth can't drift from the provider's. A claim forces a refresh so the
@@ -205,7 +200,7 @@ final class AppContainer {
 
     /// The Settings "Reset All Settings" action: restores every user preference the container owns to
     /// its default (see `docs/settings.md` § Reset). Composes the Customize reset (`resetToDefault` +
-    /// provider reseed) with the Settings-only preferences. Deliberately untouched: the iCloud sync device identity, provider credentials, and
+    /// provider reseed) with the Settings-only preferences. Deliberately untouched: provider credentials, and
     /// cached usage snapshots.
     /// Launch at Login and the Sparkle update preferences live outside the container; the Settings
     /// screen resets those alongside this call.
@@ -217,9 +212,6 @@ final class AppContainer {
         dataStore.resetDisplaySettings()
         notificationSettings.resetToDefaults()
         transparency.resetToDefaults()
-        // Same as flipping the Settings toggle off: stops syncing and removes this Mac's document
-        // from the shared iCloud container (peers keep their own history).
-        iCloudSync.enabled = false
         // Removing an `@AppStorage` key restores its declared default; the Settings screen's
         // `@AppStorage` properties observe the change. New settings must be added here.
         for key in [

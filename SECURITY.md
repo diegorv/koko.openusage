@@ -12,8 +12,6 @@ If you find a security vulnerability in OpenUsage, please report it responsibly.
 
 This keeps the report private until a fix is released.
 
-### Alternative: Email
-
 
 ## What to Include
 

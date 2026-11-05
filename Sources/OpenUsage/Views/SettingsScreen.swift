@@ -214,18 +214,7 @@ struct SettingsScreen: View {
     }
 
     private var privacySection: some View {
-        @Bindable var privacy = container.privacy
-        return section("Privacy") {
-            row("Hide From Screen Share") {
-                Toggle("", isOn: $privacy.hideUsageWhileScreenSharing)
-                    .settingsSwitchStyle()
-            }
-            Text("While your screen is shared or recorded, the menu bar shows “OpenUsage” instead of your usage.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 8)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        section("Privacy") {
             row("Help Make OpenUsage Better") {
                 Toggle("", isOn: Binding(
                     get: { container.telemetry.isEnabled },

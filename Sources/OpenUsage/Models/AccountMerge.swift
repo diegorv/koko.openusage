@@ -76,6 +76,9 @@ struct AccountTick: Hashable {
 struct AccountReading {
     let account: MergedAccount
     let data: WidgetData
+    /// The account has no limit readings at all right now (rate limited, refresh failed), as opposed
+    /// to simply lacking this one metric.
+    var isUnavailable = false
 }
 
 extension WidgetData {
@@ -99,6 +102,7 @@ extension WidgetData {
             row.limit = tick.limit
             row.resetsAt = tick.resetsAt
             row.accountTicks = []
+            row.unavailableAccounts = []
             return (tick.account, row)
         }
     }
@@ -113,14 +117,17 @@ extension WidgetData {
     /// The row with generic account names, for images that leave the app: short names are usually an
     /// email's local part.
     func anonymizingAccounts() -> WidgetData {
+        func anonymous(_ account: MergedAccount) -> MergedAccount {
+            MergedAccount(providerID: account.providerID, shortName: "Account \(account.colorIndex + 1)",
+                          colorIndex: account.colorIndex)
+        }
         var row = self
-        row.accountTicks = accountTicks.enumerated().map { index, tick in
+        row.accountTicks = accountTicks.map { tick in
             var tick = tick
-            tick.account = MergedAccount(providerID: tick.account.providerID,
-                                         shortName: "Account \(index + 1)",
-                                         colorIndex: tick.account.colorIndex)
+            tick.account = anonymous(tick.account)
             return tick
         }
+        row.unavailableAccounts = unavailableAccounts.map(anonymous)
         return row
     }
 
@@ -133,6 +140,7 @@ extension WidgetData {
         guard readings.count > 1 else { return readings[0].data }
         let present = readings.filter(\.data.hasData)
         guard var merged = present.first?.data else { return readings[0].data }
+        merged.unavailableAccounts = readings.filter { $0.isUnavailable && !$0.data.hasData }.map(\.account)
         guard present.count > 1 else {
             merged.accountTicks = ticks(present)
             return merged

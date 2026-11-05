@@ -23,8 +23,12 @@ extension WidgetDataStore {
             var reading = accountDescriptor.map { data(for: $0) } ?? data(for: descriptor)
             // An account card without this metric has nothing to add.
             if accountDescriptor == nil { reading.hasData = false }
-            return AccountReading(account: account, data: reading)
+            return AccountReading(account: account, data: reading, isUnavailable: !hasLimitReadings(account.providerID))
         }
         return readings.count == 1 ? WidgetData.soloAccount(readings[0]) : WidgetData.merging(readings)
+    }
+
+    private func hasLimitReadings(_ providerID: String) -> Bool {
+        descriptors(forProvider: providerID).contains { $0.sample.kind == .percent && data(for: $0).hasData }
     }
 }

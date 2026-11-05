@@ -593,6 +593,8 @@ final class WidgetDataStore {
     }
 
     /// A registered descriptor by id; a merged card finds each account's own metric with it.
+    func descriptors(forProvider providerID: String) -> [WidgetDescriptor] { registry.descriptors(for: providerID) }
+
     func descriptor(id: String) -> WidgetDescriptor? { registry.descriptor(id: id) }
 
     func data(for descriptor: WidgetDescriptor) -> WidgetData {

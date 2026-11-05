@@ -144,7 +144,7 @@ enum MenuBarStripRenderer {
     static let fallbackIcon: NSImage = {
         let image = NSImage(
             systemSymbolName: "gauge.with.dots.needle.bottom.50percent",
-            accessibilityDescription: "OpenUsage"
+            accessibilityDescription: "koko.openusage"
         ) ?? NSImage()
         image.isTemplate = true
         return image

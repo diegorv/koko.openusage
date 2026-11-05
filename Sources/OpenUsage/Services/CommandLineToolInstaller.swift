@@ -60,11 +60,11 @@ final class CommandLineToolInstaller {
         refreshStatus()
         guard status != .installed else { return }
         guard status != .conflict else {
-            errorMessage = "\(destinationPath) already exists and wasn't installed by OpenUsage."
+            errorMessage = "\(destinationPath) already exists and wasn't installed by koko.openusage."
             return
         }
         guard fileManager.isExecutableFile(atPath: sourcePath) else {
-            errorMessage = "The bundled terminal helper couldn't be found. Reinstall OpenUsage and try again."
+            errorMessage = "The bundled terminal helper couldn't be found. Reinstall koko.openusage and try again."
             return
         }
         handle(performPrivileged(.install, sourcePath, destinationPath), action: "install")

@@ -34,7 +34,7 @@ struct OpenUsageCLI {
         } catch CLIError.usage(let message) {
             fail("\(message)\nRun 'openusage --help' for usage.", code: 2)
         } catch CLIError.appDefaultsUnavailable {
-            fail("Could not open the OpenUsage settings domain.", code: 4)
+            fail("Could not open the koko.openusage settings domain.", code: 4)
         } catch UsageReaderError.unknownProvider(let providerID) {
             fail("Unknown provider: \(providerID)", code: 2)
         } catch {

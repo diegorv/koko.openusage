@@ -15,7 +15,7 @@ struct FirstLaunchWelcomeView: View {
                     .scaledToFit()
                     .frame(width: 72, height: 72)
                     .accessibilityHidden(true)
-                Text("Welcome to OpenUsage")
+                Text("Welcome to koko.openusage")
                     .font(.system(size: 27, weight: .semibold))
                 Text("Choose the tools you want to follow. We'll use the sign-ins already on this Mac.")
                     .font(.callout)

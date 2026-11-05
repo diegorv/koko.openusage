@@ -20,7 +20,7 @@ MODE="${1:-run}"
 CONFIG="${CONFIG:-release}"
 
 TARGET_NAME="OpenUsage"                 # SwiftPM target / binary name
-APP_DISPLAY="OpenUsage"                 # user-facing app name
+APP_DISPLAY="koko.openusage"                 # user-facing app name
 if [ "$MODE" = "install" ]; then
   BUNDLE_ID="com.diegorv.openusage"
 else

@@ -10,8 +10,8 @@ struct HubAccountsChangedCard: View {
             systemImage: "arrow.clockwise.circle",
             title: "Hub Accounts Changed",
             message: notice.relaunchFailed
-                ? "OpenUsage couldn't relaunch itself. Quit and reopen it to show the hub's current accounts."
-                : "Relaunch OpenUsage to show the hub's current accounts.",
+                ? "koko.openusage couldn't relaunch itself. Quit and reopen it to show the hub's current accounts."
+                : "Relaunch koko.openusage to show the hub's current accounts.",
             buttonTitle: "Relaunch",
             action: { notice.relaunch() },
             onDismiss: { withAnimation(Motion.spring) { notice.dismiss() } }

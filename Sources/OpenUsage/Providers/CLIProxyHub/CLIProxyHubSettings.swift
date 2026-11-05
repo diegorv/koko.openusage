@@ -38,7 +38,7 @@ final class CLIProxyHubSettings {
             loadError = nil
         } catch {
             hubs = []
-            loadError = "OpenUsage couldn't read \(CLIProxyHubConfigStore.path). Fix or remove the file, then reopen Settings."
+            loadError = "koko.openusage couldn't read \(CLIProxyHubConfigStore.path). Fix or remove the file, then reopen Settings."
             AppLog.error(.config, "cliproxy hub config at \(CLIProxyHubConfigStore.path) is unreadable in Settings: \(error.localizedDescription)")
         }
     }
@@ -110,7 +110,7 @@ final class CLIProxyHubSettings {
             do {
                 try store.save(config)
             } catch {
-                actionError = "OpenUsage couldn't save the hub settings."
+                actionError = "koko.openusage couldn't save the hub settings."
                 AppLog.error(.config, "cliproxy hub config save failed: \(error.localizedDescription)")
                 return false
             }

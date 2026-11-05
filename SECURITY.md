@@ -6,7 +6,7 @@ If you find a security vulnerability in OpenUsage, please report it responsibly.
 
 ### Preferred: GitHub Security Advisories
 
-1. Go to the [Security Advisories page](https://github.com/diegorv/openusage/security/advisories/new)
+1. Go to the [Security Advisories page](https://github.com/diegorv/koko.openusage/security/advisories/new)
 2. Click "Report a vulnerability"
 3. Fill in the details
 
